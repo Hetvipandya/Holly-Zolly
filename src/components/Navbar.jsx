@@ -9,8 +9,6 @@ import {
 } from "react-icons/fi";
 import SearchModal from "./SearchModal";
 
-
-
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState(false);
@@ -18,280 +16,159 @@ export default function Navbar() {
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
 
- useEffect(() => {
-  const updateCounts = () => {
-    const cart =
-      JSON.parse(localStorage.getItem("cartItems")) || [];
+  useEffect(() => {
+    const updateCounts = () => {
+      const cart =
+        JSON.parse(localStorage.getItem("cartItems")) || [];
 
-    const totalQty = cart.reduce(
-      (sum, item) => sum + Number(item.quantity || 0),
-      0
-    );
+      const totalQty = cart.reduce(
+        (sum, item) => sum + Number(item.quantity || 0),
+        0
+      );
 
-    setCartCount(totalQty);
+      setCartCount(totalQty);
 
-    const wishlist =
-      JSON.parse(localStorage.getItem("wishlistItems")) || [];
+      const wishlist =
+        JSON.parse(localStorage.getItem("wishlistItems")) || [];
 
-    setWishlistCount(wishlist.length);
-  };
+      setWishlistCount(wishlist.length);
+    };
 
-  updateCounts();
+    updateCounts();
 
-  window.addEventListener("cartUpdated", updateCounts);
-  window.addEventListener("wishlistUpdated", updateCounts);
+    window.addEventListener("cartUpdated", updateCounts);
+    window.addEventListener("wishlistUpdated", updateCounts);
 
-  return () => {
-    window.removeEventListener("cartUpdated", updateCounts);
-    window.removeEventListener("wishlistUpdated", updateCounts);
-  };
-}, []);
-
-
-
-
-
+    return () => {
+      window.removeEventListener("cartUpdated", updateCounts);
+      window.removeEventListener("wishlistUpdated", updateCounts);
+    };
+  }, []);
 
   const navLinkClass = ({ isActive }) =>
     isActive
-      ? "text-primary font-semibold border-b-4 border-primary font-heading"
-      : "hover:text-primary font-heading";
+      ? "text-black font-semibold border-b-2 border-white font-heading"
+      : "text-black hover:text-gray-700 font-heading";
 
-  // Lock body scroll when mobile menu is open
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "auto";
     return () => (document.body.style.overflow = "auto");
   }, [open]);
 
   return (
-    <nav className="sticky top-0 z-[99990] bg-white shadow">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <nav className="sticky top-0 z-[99990] bg-gray-300 shadow-md border-b border-white/10">
+      <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
 
-        {/* LOGO */}
-        <NavLink to="/" onClick={() => setOpen(false)} className="flex items-center font-heading ">
-          <img src="/image/logo/harvon-logo.png" alt="Logo" className="h-14" />
-          <p className="text-4xl text-primary hidden lg:block">ARVON</p>
-        </NavLink>
+        {/* LOGO + TEXT */}
+    <NavLink
+  to="/"
+  onClick={() => setOpen(false)}
+  className="flex items-center gap-2"
+>
+  <img
+    src="/image/logo/LOGO.png"
+    alt="Logo"
+    className="h-20 w-auto object-contain"
+  />
+</NavLink>
 
 
         {/* DESKTOP MENU */}
-        <ul className="hidden md:flex gap-8 font-heading text-lg items-center text-[18px] ">
-          <li>
-            <NavLink to="/" className={navLinkClass}>
-              Home
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/about" className={navLinkClass}>
-              About
-            </NavLink>
-          </li>
-          {/* <li>
-            <NavLink to="/shop" className={navLinkClass}>
-              Shop
-            </NavLink>
-          </li> */}
+        <ul className="hidden md:flex gap-8 font-heading text-lg  items-center">
+          <li><NavLink to="/" className={navLinkClass} >Home</NavLink></li>
+          <li><NavLink to="/about" className={navLinkClass}>About</NavLink></li>
+
           <li className="relative group">
             <NavLink to="/shop" className={navLinkClass}>
               Category
             </NavLink>
 
-            {/* DROPDOWN */}
-            <ul className="absolute left-0 top-full mt-2 w-44 bg-white shadow-lg rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-              <li>
-                <NavLink
-                  to="/shop?category=all"
-                  className="block px-4 py-2 text-sm hover:bg-gray-100"
-                >
-                  All
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/shop?category=men"
-                  className="block px-4 py-2 text-sm hover:bg-gray-100"
-                >
-                  Men
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/shop?category=women"
-                  className="block px-4 py-2 text-sm hover:bg-gray-100"
-                >
-                  Women
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/shop?category=footwear"
-                  className="block px-4 py-2 text-sm hover:bg-gray-100"
-                >
-                  Footwear
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/shop?category=accessories"
-                  className="block px-4 py-2 text-sm hover:bg-gray-100"
-                >
-                  Accessories
-                </NavLink>
-              </li>
+            <ul className="absolute left-0 top-full mt-2 w-44 bg-white text-black shadow-lg rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <li><NavLink to="/shop?category=all" className="block px-4 py-2 hover:bg-gray-100">All</NavLink></li>
+              <li><NavLink to="/shop?category=men" className="block px-4 py-2 hover:bg-gray-100">Men</NavLink></li>
+              <li><NavLink to="/shop?category=women" className="block px-4 py-2 hover:bg-gray-100">Women</NavLink></li>
+              <li><NavLink to="/shop?category=footwear" className="block px-4 py-2 hover:bg-gray-100">Footwear</NavLink></li>
+              <li><NavLink to="/shop?category=accessories" className="block px-4 py-2 hover:bg-gray-100">Accessories</NavLink></li>
             </ul>
           </li>
 
-          <li>
-            <NavLink to="/orders" className={navLinkClass}>
-              Orders
-            </NavLink>
-          </li>
+          <li><NavLink to="/orders" className={navLinkClass}>Orders</NavLink></li>
         </ul>
 
+        {/* ICONS */}
+        <div className="flex items-center gap-5 text-black">
 
-        <div className="flex items-center gap-5">
-
-          {/* SEARCH ICON */}
           <button
             onClick={() => setOpenSearch(true)}
-            className="text-xl hover:text-primary"
-            aria-label="Search"
+            className="text-xl hover:text-black"
           >
             <FiSearch />
           </button>
 
-          {/* SEARCH MODAL */}
           {openSearch && (
             <SearchModal onClose={() => setOpenSearch(false)} />
           )}
 
-          {/* WISHLIST */}
-          <NavLink
-            to="/wishlist"
-            className={({ isActive }) =>
-              `${isActive ? "text-primary" : "hover:text-primary"} relative cursor-pointer`
-            }
-          >
-            <FiHeart className="text-xl" />
+          <NavLink to="/wishlist" className="relative hover:text-primary">
+            <FiHeart className="text-xl text-black" />
             {wishlistCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs h-5 w-5 flex items-center justify-center rounded-full">
                 {wishlistCount}
               </span>
             )}
-
           </NavLink>
 
-
-          {/* CART */}
-          <NavLink
-            to="/cart"
-            className={({ isActive }) =>
-              `${isActive ? "text-primary" : "hover:text-primary"} relative cursor-pointer`
-            }
-          >
-            <FiShoppingCart className="text-xl" />
+          <NavLink to="/cart" className="relative hover:text-primary">
+            <FiShoppingCart className="text-xl text-black" />
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs h-5 w-5 flex items-center justify-center rounded-full">
                 {cartCount}
               </span>
             )}
-
           </NavLink>
 
-
-
-
-          {/* PROFILE */}
-          <NavLink
-            to="/profile"
-            className={({ isActive }) =>
-              `${isActive ? "text-primary" : "hover:text-primary"} relative cursor-pointer`
-            }
-          >
-            <FiUser className="text-xl" />
-
+          <NavLink to="/profile" className="hover:text-primary">
+            <FiUser className="text-xl text-black" />
           </NavLink>
 
-
-
-
-          {/* MOBILE MENU BUTTON */}
+          {/* MOBILE BUTTON */}
           <button
-            className="md:hidden text-2xl bg-primary text-light p-2 rounded-lg"
+            className="md:hidden text-2xl bg-primary text-black p-2 rounded-lg"
             onClick={() => setOpen(!open)}
-            aria-label="Toggle menu"
           >
             {open ? <FaTimes /> : <FaBars />}
           </button>
-
         </div>
-
-
-
-
       </div>
 
       {/* MOBILE MENU */}
       {open && (
-        <div className="md:hidden bg-white border-t shadow-lg">
-          <ul className="flex flex-col gap-4 px-6 py-6 font-heading text-lg">
+        <div className="md:hidden bg-black border-t border-white/10">
+          <ul className="flex flex-col gap-4 px-6 py-6 text-white">
+            <li><NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink></li>
+            <li><NavLink to="/about" onClick={() => setOpen(false)}>About</NavLink></li>
+
             <li>
-              <NavLink
-                to="/"
-                className={navLinkClass}
-                onClick={() => setOpen(false)}
-              >
-                Home
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/about"
-                className={navLinkClass}
-                onClick={() => setOpen(false)}
-              >
-                About
-              </NavLink>
-            </li>
-            {/* <li>
-              <NavLink
-                to="/shop"
-                className={navLinkClass}
-                onClick={() => setOpen(false)}
-              >
-                Shop
-              </NavLink>
-            </li> */}
-            <li>
-              <NavLink to="/shop"
+              <button
                 onClick={() => setOpenCategory(!openCategory)}
-                className={navLinkClass}
+                className="text-left w-full"
               >
                 Category
-              </NavLink>
+              </button>
 
               {openCategory && (
                 <ul className="pl-4 mt-2 space-y-2">
-                  <li><NavLink to="/shop?category=all" onClick={() => setOpen(false)}>All</NavLink></li>
-                  <li><NavLink to="/shop?category=men" onClick={() => setOpen(false)}>Men</NavLink></li>
-                  <li><NavLink to="/shop?category=women" onClick={() => setOpen(false)}>Women</NavLink></li>
-                  <li><NavLink to="/shop?category=footwear" onClick={() => setOpen(false)}>Footwear</NavLink></li>
-                  <li><NavLink to="/shop?category=accessories" onClick={() => setOpen(false)}>Accessories</NavLink></li>
+                  <li><NavLink to="/shop?category=all">All</NavLink></li>
+                  <li><NavLink to="/shop?category=men">Men</NavLink></li>
+                  <li><NavLink to="/shop?category=women">Women</NavLink></li>
+                  <li><NavLink to="/shop?category=footwear">Footwear</NavLink></li>
+                  <li><NavLink to="/shop?category=accessories">Accessories</NavLink></li>
                 </ul>
               )}
             </li>
 
-            <li>
-              <NavLink
-                to="/orders"
-                className={navLinkClass}
-                onClick={() => setOpen(false)}
-              >
-                Orders
-              </NavLink>
-            </li>
+            <li><NavLink to="/orders">Orders</NavLink></li>
           </ul>
-
         </div>
       )}
     </nav>

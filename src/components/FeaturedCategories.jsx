@@ -7,18 +7,18 @@ import { Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 
-export default function FeaturedCategories() {
+export default function FeaturedCategories() { 
   return (
     <section className="py-16 bg-light">
       <div className="max-w-7xl mx-auto px-6">
 
-        {/* SECTION TITLE */}
+        {/* ✅ SECTION TITLE UPDATED */}
         <div className="text-start mb-12" data-aos="fade-up">
-          <h2 className="text-3xl font-heading font-bold text-primary">
-            Men's Clothing Categories in Ahmedabad
+          <h2 className="text-3xl font-heading font-bold text-black">
+            Vastu & Spiritual Categories
           </h2>
-          <p className="mt-2 text-gray-600">
-            Explore men's casual wear, formal wear, party wear, and ethnic wear at Harvon, the best men's fashion store in Ahmedabad.
+          <p className="mt-2 text-black">
+            Explore a wide range of Vastu items, spiritual tools, crystals, pyramids, and healing products to bring positivity and balance into your life.
           </p>
         </div>
 
@@ -67,7 +67,6 @@ export default function FeaturedCategories() {
                 </div>
 
               </Link>
-
             </SwiperSlide>
           ))}
         </Swiper>

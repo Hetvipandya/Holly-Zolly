@@ -1,30 +1,30 @@
 const categories = [
   {
     id: 1,
-    name: "Men",
+    name: "Lotus",
     image:
-      "/image/products/men/men1.jpg",
+      "/image/products/Vastukkalp Lotus.jpeg",
       status : "active",
   },
-  {
+  { 
     id: 2,
-    name: "Women",
+    name: "Rudraksh ",
     image:
-      "/image/products/women/women1.jpg",
+      "/image/products/Vastukkalp Rudraksh Kavach.jpeg",
       status : "active",
   },
   {
     id: 3,
-    name: "Footwear",
+    name: "Sriparni box",
     image:
-      "/image/products/footwear/foot1.jpg",
-      status : "inactive",
+      "/image/products/Vastukkalp Sriparni box.jpeg",
+      status : "active",
   },
   {
     id: 4,
     name: "Accessories",
     image:
-      "/image/products/accessories/acc1.jpg",
+      "/image/products/Vastukkalp Vajra.jpeg",
       status : "active",
   },
 ];
