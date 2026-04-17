@@ -8,10 +8,11 @@ module.exports = {
         accent: "#3B82F6",
         light: "#F8FAFC",
       },
-      fontFamily: {
-        heading: ["Poppins", "sans-serif"],
-        body: ["Inter", "sans-serif"],
-      },
+    extend: {
+  fontFamily: {
+    holy: ["Cinzel Decorative", "serif"],
+  },
+}
     },
   },
   plugins: [],

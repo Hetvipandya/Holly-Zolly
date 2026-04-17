@@ -1,109 +1,223 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-
+import {
+  FaEye,
+  FaEyeSlash,
+  FaUser,
+  FaEnvelope,
+  FaLock,
+  FaArrowRight,
+} from "react-icons/fa";
 
 export default function Register() {
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const navigate = useNavigate();
 
-    return (
-        <section className="md:py-20 flex items-center justify-center bg-gray-50">
-            <div className="bg-white p-8 rounded-lg shadow w-full max-w-md">
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-                {/* LOGO */}
-                <div className="flex items-center font-heading justify-center pb-5 gap-2">
-                    <img src="/image/logo/harvon-logo.png" alt="Logo" className="h-14" />
-                    <h2 className="text-4xl text-primary "> Create New</h2>
-                </div>
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-                <form className="space-y-4">
-                    <div>
-                        <label className="block mb-1 font-semibold  text-primary">Full Name</label>
-                        <input
-                            type="text"
-                            placeholder="Enter your name"
-                            className="w-full border rounded px-4 py-2 focus:outline-none focus:border-primary"
-                        />
-                    </div>
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-                    <div>
-                        <label className="block mb-1 font-semibold  text-primary">Email</label>
-                        <input
-                            type="email"
-                            placeholder="Enter your email"
-                            className="w-full border rounded px-4 py-2 focus:outline-none focus:border-primary"
-                        />
-                    </div>
+  // 🔥 EMAIL VALIDATION FUNCTION
+  const isValidEmail = (email) => {
+    return /\S+@\S+\.\S+/.test(email);
+  };
 
-                    {/* PASSWORD */}
-                    <div>
-                        <label className="block mb-1 font-semibold text-primary">
-                            Password
-                        </label>
+  // 🚀 REGISTER HANDLER
+  const handleRegister = (e) => {
+    e.preventDefault();
 
-                        <div className="relative">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                placeholder="Create password"
-                                className="w-full border rounded px-4 py-2 pr-10 focus:outline-none focus:border-primary"
-                            />
+    const name = form.name.trim();
+    const email = form.email.trim();
+    const password = form.password;
+    const confirmPassword = form.confirmPassword;
 
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary"
-                            >
-                                {showPassword ? <FaEyeSlash /> : <FaEye />}
-                            </button>
-                        </div>
-                    </div>
+    // ✅ VALIDATIONS
+    if (!name || !email || !password || !confirmPassword) {
+      toast.error("All fields are required");
+      return;
+    }
 
-                    {/* CONFIRM PASSWORD */}
-                    <div>
-                        <label className="block mb-1 font-semibold text-primary">
-                            Confirm Password
-                        </label>
+    if (!isValidEmail(email)) {
+      toast.error("Invalid email format");
+      return;
+    }
 
-                        <div className="relative">
-                            <input
-                                type={showConfirmPassword ? "text" : "password"}
-                                placeholder="Confirm password"
-                                className="w-full border rounded px-4 py-2 pr-10 focus:outline-none focus:border-primary"
-                            />
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
 
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    setShowConfirmPassword(!showConfirmPassword)
-                                }
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary"
-                            >
-                                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                            </button>
-                        </div>
-                    </div>
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
 
+    const users = JSON.parse(localStorage.getItem("users")) || [];
 
-                    <button
-                        type="submit"
-                        className="w-full bg-primary text-white py-3 rounded hover:bg-secondary transition font-heading" onClick={(e) => {
-                            e.preventDefault();
-                            toast.success("Account created successfully");
-                        }}
-                    >
-                        Register
-                    </button>
-                </form>
+    const userExists = users.find((u) => u.email === email);
 
-                <p className="text-center mt-6 text-sm">
-                    Already have an account?{" "}
-                    <Link to="/login" className="text-primary font-semibold">
-                        Login
-                    </Link>
-                </p>
+    if (userExists) {
+      toast.error("User already exists");
+      return;
+    }
+
+    // ✅ CREATE USER
+    const newUser = {
+      id: Date.now(),
+      name,
+      email,
+      password,
+    };
+
+    users.push(newUser);
+    localStorage.setItem("users", JSON.stringify(users));
+
+    // 🔥 AUTO LOGIN AFTER REGISTER
+    localStorage.setItem("currentUser", JSON.stringify(newUser));
+
+    toast.success("Account created successfully 🎉");
+
+    navigate("/");
+  };
+
+  return (
+    <section className="min-h-screen flex items-center justify-center bg-[#FCFBFA] py-16 px-6 relative overflow-hidden">
+      
+      {/* BACKGROUND */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-orange-100/40 rounded-full -mr-48 -mt-48 blur-3xl"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-gray-100 rounded-full -ml-48 -mb-48 blur-3xl"></div>
+
+      <div className="bg-white rounded-[3rem] shadow-[0_20px_70px_rgba(0,0,0,0.03)] border border-gray-100 w-full max-w-xl overflow-hidden flex flex-col md:flex-row relative z-10">
+        
+        {/* LEFT SIDE */}
+        <div className="hidden lg:flex w-2/5 bg-black p-12 text-white flex-col justify-between">
+          <div>
+            <h2 className="text-3xl font-heading font-bold mt-10 leading-tight">
+              Begin Your <br />
+              <span className="text-orange-500 italic font-serif">
+                Spiritual
+              </span>{" "}
+              Journey.
+            </h2>
+          </div>
+          <p className="text-gray-400 text-xs uppercase font-bold">
+            Vastukkalp © 2026
+          </p>
+        </div>
+
+        {/* RIGHT SIDE */}
+        <div className="flex-1 p-8 md:p-12">
+          <div className="text-center md:text-left mb-10">
+            <h1 className="text-3xl font-heading font-bold text-black mb-2">
+              Create{" "}
+              <span className="text-orange-600 italic">Account</span>
+            </h1>
+            <p className="text-gray-400 text-sm">
+              Join the community of Vastu experts.
+            </p>
+          </div>
+
+          <form className="space-y-6" onSubmit={handleRegister}>
+            
+            {/* NAME */}
+            <div>
+              <label className="text-xs text-gray-400 flex items-center gap-2">
+                <FaUser size={10} /> Full Name
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="Pandya Hetvi"
+                className="w-full mt-2 px-4 py-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-orange-500"
+              />
             </div>
-        </section>
-    );
+
+            {/* EMAIL */}
+            <div>
+              <label className="text-xs text-gray-400 flex items-center gap-2">
+                <FaEnvelope size={10} /> Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="example@gmail.com"
+                className="w-full mt-2 px-4 py-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-orange-500"
+              />
+            </div>
+
+            {/* PASSWORDS */}
+            <div className="grid md:grid-cols-2 gap-4">
+              
+              {/* PASSWORD */}
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  placeholder="Password"
+                  className="w-full px-4 py-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-orange-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-3 text-gray-400"
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+
+              {/* CONFIRM */}
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={form.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Confirm Password"
+                  className="w-full px-4 py-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-orange-500"
+                />
+                <button
+                  type="button"
+                  onClick={() =>
+                    setShowConfirmPassword(!showConfirmPassword)
+                  }
+                  className="absolute right-3 top-3 text-gray-400"
+                >
+                  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+            </div>
+
+            {/* BUTTON */}
+            <button className="w-full bg-black text-white py-4 rounded-xl flex justify-center items-center gap-2 hover:bg-orange-600 transition">
+              Sign Up <FaArrowRight />
+            </button>
+          </form>
+
+          {/* LOGIN LINK */}
+          <p className="text-center mt-6 text-sm text-gray-400">
+            Already have an account?{" "}
+            <Link to="/login" className="text-black font-bold">
+              Login
+            </Link>
+          </p>
+        </div>
+      </div>
+    </section>
+  );
 }

@@ -15,7 +15,15 @@ export default function Navbar() {
   const [openSearch, setOpenSearch] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
+  const [user, setUser] = useState(null);
 
+  // ✅ Load logged-in user
+  useEffect(() => {
+    const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (currentUser) setUser(currentUser);
+  }, []);
+
+  // ✅ Cart & Wishlist Count
   useEffect(() => {
     const updateCounts = () => {
       const cart =
@@ -47,7 +55,7 @@ export default function Navbar() {
 
   const navLinkClass = ({ isActive }) =>
     isActive
-      ? "text-black font-semibold border-b-2 border-white font-heading"
+      ? "text-black font-semibold border-b-2 border-black font-heading"
       : "text-black hover:text-gray-700 font-heading";
 
   useEffect(() => {
@@ -59,23 +67,18 @@ export default function Navbar() {
     <nav className="sticky top-0 z-[99990] bg-gray-300 shadow-md border-b border-white/10">
       <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
 
-        {/* LOGO + TEXT */}
-    <NavLink
-  to="/"
-  onClick={() => setOpen(false)}
-  className="flex items-center gap-2"
->
-  <img
-    src="/image/logo/LOGO.png"
-    alt="Logo"
-    className="h-20 w-auto object-contain"
-  />
-</NavLink>
-
+        {/* LOGO */}
+        <NavLink to="/" onClick={() => setOpen(false)}>
+          <img
+            src="/image/logo/LOGO.png"
+            alt="Logo"
+            className="h-20 w-auto object-contain"
+          />
+        </NavLink>
 
         {/* DESKTOP MENU */}
-        <ul className="hidden md:flex gap-8 font-heading text-lg  items-center">
-          <li><NavLink to="/" className={navLinkClass} >Home</NavLink></li>
+        <ul className="hidden md:flex gap-8 font-heading text-lg items-center">
+          <li><NavLink to="/" className={navLinkClass}>Home</NavLink></li>
           <li><NavLink to="/about" className={navLinkClass}>About</NavLink></li>
 
           <li className="relative group">
@@ -85,10 +88,11 @@ export default function Navbar() {
 
             <ul className="absolute left-0 top-full mt-2 w-44 bg-white text-black shadow-lg rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
               <li><NavLink to="/shop?category=all" className="block px-4 py-2 hover:bg-gray-100">All</NavLink></li>
-              <li><NavLink to="/shop?category=men" className="block px-4 py-2 hover:bg-gray-100">Men</NavLink></li>
-              <li><NavLink to="/shop?category=women" className="block px-4 py-2 hover:bg-gray-100">Women</NavLink></li>
-              <li><NavLink to="/shop?category=footwear" className="block px-4 py-2 hover:bg-gray-100">Footwear</NavLink></li>
-              <li><NavLink to="/shop?category=accessories" className="block px-4 py-2 hover:bg-gray-100">Accessories</NavLink></li>
+              <li><NavLink to="/shop?category=Vedic Vastukkalp Aayudh" className="block px-4 py-2 hover:bg-gray-100">Vedic Vastukkalp Aayudh</NavLink></li>
+              <li><NavLink to="/shop?category=Aayudh Frame" className="block px-4 py-2 hover:bg-gray-100">Aayudh Frame</NavLink></li>
+              <li><NavLink to="/shop?category=Vastu Shashtra Book" className="block px-4 py-2 hover:bg-gray-100">Vastu Shashtra Book</NavLink></li>
+              <li><NavLink to="/shop?category=Kamal Kalp Yantra" className="block px-4 py-2 hover:bg-gray-100">Kamal Kalp Yantra</NavLink></li>
+              <li><NavLink to="/shop?category=Charoit Rath" className="block px-4 py-2 hover:bg-gray-100">Charoit Rath</NavLink></li>
             </ul>
           </li>
 
@@ -98,19 +102,18 @@ export default function Navbar() {
         {/* ICONS */}
         <div className="flex items-center gap-5 text-black">
 
-          <button
-            onClick={() => setOpenSearch(true)}
-            className="text-xl hover:text-black"
-          >
-            <FiSearch />
+          {/* SEARCH */}
+          <button onClick={() => setOpenSearch(true)}>
+            <FiSearch className="text-xl" />
           </button>
 
           {openSearch && (
             <SearchModal onClose={() => setOpenSearch(false)} />
           )}
 
-          <NavLink to="/wishlist" className="relative hover:text-primary">
-            <FiHeart className="text-xl text-black" />
+          {/* WISHLIST */}
+          <NavLink to="/wishlist" className="relative">
+            <FiHeart className="text-xl" />
             {wishlistCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs h-5 w-5 flex items-center justify-center rounded-full">
                 {wishlistCount}
@@ -118,8 +121,9 @@ export default function Navbar() {
             )}
           </NavLink>
 
-          <NavLink to="/cart" className="relative hover:text-primary">
-            <FiShoppingCart className="text-xl text-black" />
+          {/* CART */}
+          <NavLink to="/cart" className="relative">
+            <FiShoppingCart className="text-xl" />
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs h-5 w-5 flex items-center justify-center rounded-full">
                 {cartCount}
@@ -127,13 +131,37 @@ export default function Navbar() {
             )}
           </NavLink>
 
-          <NavLink to="/profile" className="hover:text-primary">
-            <FiUser className="text-xl text-black" />
-          </NavLink>
+          {/* ✅ USER */}
+          {user ? (
+            <div className="relative group cursor-pointer">
+              <FiUser className="text-xl" />
 
-          {/* MOBILE BUTTON */}
+              <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md opacity-0 group-hover:opacity-100 transition z-50">
+                <p className="px-4 py-2 text-sm font-semibold">
+                  {user.name}
+                </p>
+
+                <button
+                  onClick={() => {
+                    localStorage.removeItem("currentUser");
+                    setUser(null);
+                    window.location.href = "/";
+                  }}
+                  className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          ) : (
+            <NavLink to="/login">
+              <FiUser className="text-xl" />
+            </NavLink>
+          )}
+
+          {/* ✅ MOBILE BUTTON (GRAY FIX) */}
           <button
-            className="md:hidden text-2xl bg-primary text-black p-2 rounded-lg"
+            className="md:hidden text-2xl bg-gray-300 text-black p-2 rounded-lg"
             onClick={() => setOpen(!open)}
           >
             {open ? <FaTimes /> : <FaBars />}
@@ -147,26 +175,6 @@ export default function Navbar() {
           <ul className="flex flex-col gap-4 px-6 py-6 text-white">
             <li><NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink></li>
             <li><NavLink to="/about" onClick={() => setOpen(false)}>About</NavLink></li>
-
-            <li>
-              <button
-                onClick={() => setOpenCategory(!openCategory)}
-                className="text-left w-full"
-              >
-                Category
-              </button>
-
-              {openCategory && (
-                <ul className="pl-4 mt-2 space-y-2">
-                  <li><NavLink to="/shop?category=all">All</NavLink></li>
-                  <li><NavLink to="/shop?category=men">Men</NavLink></li>
-                  <li><NavLink to="/shop?category=women">Women</NavLink></li>
-                  <li><NavLink to="/shop?category=footwear">Footwear</NavLink></li>
-                  <li><NavLink to="/shop?category=accessories">Accessories</NavLink></li>
-                </ul>
-              )}
-            </li>
-
             <li><NavLink to="/orders">Orders</NavLink></li>
           </ul>
         </div>

@@ -1,85 +1,167 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-
+import {
+  FaEye,
+  FaEyeSlash,
+  FaEnvelope,
+  FaLock,
+  FaArrowRight,
+} from "react-icons/fa";
 
 export default function Login() {
-    const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    return (
-        <section className="md:py-20 flex items-center justify-center bg-gray-50">
-            <div className="bg-white p-8 rounded-lg shadow w-full max-w-md">
-                {/* LOGO */}
-                <div className="flex items-center font-heading justify-center pb-5 gap-2">
-                    <img src="/image/logo/harvon-logo.png" alt="Logo" className="h-14" />
-                    <h2 className="text-4xl text-primary "> Login</h2>
-                </div>
+  const [showPassword, setShowPassword] = useState(false);
 
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
 
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
-                <form className="space-y-4">
-                    <div>
-                        <label className="block mb-1 font-semibold text-primary">Email</label>
-                        <input
-                            type="email"
-                            placeholder="Enter your email"
-                            className="w-full border rounded px-4 py-2 focus:outline-none focus:border-primary"
-                        />
-                    </div>
+  // 🔥 EMAIL VALIDATION
+  const isValidEmail = (email) => {
+    return /\S+@\S+\.\S+/.test(email);
+  };
 
-                    {/* PASSWORD */}
-                    <div>
-                        <label className="block mb-1 font-semibold text-primary">
-                            Password
-                        </label>
+  // 🚀 LOGIN HANDLER
+  const handleLogin = (e) => {
+    e.preventDefault();
 
-                        <div className="relative">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                placeholder="Create password"
-                                className="w-full border rounded px-4 py-2 pr-10 focus:outline-none focus:border-primary"
-                            />
+    const email = form.email.trim();
+    const password = form.password;
 
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary"
-                            >
-                                {showPassword ? <FaEyeSlash /> : <FaEye />}
-                            </button>
-                        </div>
-                    </div>
+    // ✅ VALIDATIONS
+    if (!email || !password) {
+      toast.error("All fields are required");
+      return;
+    }
 
+    if (!isValidEmail(email)) {
+      toast.error("Invalid email format");
+      return;
+    }
 
+    const users = JSON.parse(localStorage.getItem("users")) || [];
 
-                    <div className="flex justify-between items-center text-sm">
-                        <Link
-                            to="/forgot-password"
-                            className="text-primary hover:underline"
-                        >
-                            Forgot Password?
-                        </Link>
-                    </div>
-
-                    <button
-                        type="submit"
-                        className="w-full bg-primary text-white py-3 rounded hover:bg-secondary transition font-heading" onClick={(e) => {
-                            e.preventDefault();
-                            toast.success("Login successful (UI only)");
-                        }}
-                    >
-                        Login
-                    </button>
-                </form>
-
-                <p className="text-center mt-6 text-sm">
-                    Don’t have an account?{" "}
-                    <Link to="/register" className="text-primary font-semibold">
-                        Register
-                    </Link>
-                </p>
-            </div>
-        </section>
+    const user = users.find(
+      (u) => u.email === email && u.password === password
     );
+
+    if (!user) {
+      toast.error("Invalid email or password");
+      return;
+    }
+
+    // ✅ SAVE LOGIN USER
+    localStorage.setItem("currentUser", JSON.stringify(user));
+
+    toast.success(`Welcome ${user.name.split(" ")[0]} 🎉`);
+
+    // 🔥 REDIRECT BACK (IMPORTANT UX)
+    const redirectTo = location.state?.from || "/";
+    navigate(redirectTo);
+  };
+
+  return (
+    <section className="min-h-screen flex items-center justify-center bg-[#FCFBFA] py-16 px-6 relative overflow-hidden">
+      
+      {/* BACKGROUND */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-orange-100/40 rounded-full -ml-48 -mt-48 blur-3xl"></div>
+      <div className="absolute bottom-0 right-0 w-80 h-80 bg-gray-100 rounded-full -mr-40 -mb-40 blur-3xl"></div>
+
+      <div className="bg-white rounded-[3rem] shadow-[0_20px_70px_rgba(0,0,0,0.03)] border border-gray-100 w-full max-w-md overflow-hidden relative z-10">
+        
+        {/* HEADER */}
+        <div className="bg-black p-10 text-center">
+          <h2 className="text-2xl font-heading font-bold text-white uppercase tracking-widest">
+            Welcome{" "}
+            <span className="text-orange-500 italic lowercase">
+              Back
+            </span>
+          </h2>
+        </div>
+
+        {/* FORM */}
+        <div className="p-8 md:p-10">
+          <form className="space-y-6" onSubmit={handleLogin}>
+            
+            {/* EMAIL */}
+            <div>
+              <label className="text-xs text-gray-400 flex items-center gap-2">
+                <FaEnvelope size={10} /> Email Address
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="example@gmail.com"
+                className="w-full mt-2 px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 focus:ring-orange-600"
+              />
+            </div>
+
+            {/* PASSWORD */}
+            <div>
+              <div className="flex justify-between items-center">
+                <label className="text-xs text-gray-400 flex items-center gap-2">
+                  <FaLock size={10} /> Password
+                </label>
+                <Link
+                  to="/forgot-password"
+                  className="text-xs text-orange-600 font-bold"
+                >
+                  Forgot?
+                </Link>
+              </div>
+
+              <div className="relative mt-2">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={form.password}
+                  onChange={handleChange}
+                  placeholder="••••••••"
+                  className="w-full px-5 py-4 bg-gray-50 rounded-2xl outline-none focus:ring-2 focus:ring-orange-600"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
+            </div>
+
+            {/* BUTTON */}
+            <button
+              type="submit"
+              className="w-full bg-black text-white py-5 rounded-2xl flex items-center justify-center gap-3 hover:bg-orange-600 transition uppercase text-xs font-bold"
+            >
+              Sign In <FaArrowRight size={12} />
+            </button>
+          </form>
+
+          {/* REGISTER LINK */}
+          <div className="mt-10 text-center">
+            <p className="text-xs text-gray-400">
+              New to Vastukkalp?
+            </p>
+            <Link
+              to="/register"
+              className="text-black font-bold hover:text-orange-600 underline"
+            >
+              Create an Account
+            </Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }

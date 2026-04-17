@@ -26,8 +26,7 @@ const slides = [
     subtitle: "Talk to Expert Astrologers",
     description:
       "Connect with professional astrologers for accurate guidance on marriage, career, business, and life decisions.",
-    image:
-      "https://i.pinimg.com/1200x/16/e4/97/16e49712ac69b0536703ed3f12c4db3c.jpg",
+     image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop"
   },
 ];
 

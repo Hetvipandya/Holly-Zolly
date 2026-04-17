@@ -27,12 +27,12 @@ export default function ContactCTA() {
           </p>
 
           <div className="flex justify-center gap-4 pt-4">
-            <a
-              href="/contact"
-              className="inline-flex items-center gap-2 bg-primary px-4 md:px-8 py-3 text-white font-semibold tracking-wide hover:opacity-90 transition"
-            >
-              Get Vastu Consultation →
-            </a>
+          <a
+  href="/contact"
+  className="inline-flex items-center gap-2 bg-orange-500 px-4 md:px-8 py-3 text-white font-semibold tracking-wide hover:bg-orange-600 transition"
+>
+  Get Vastu Consultation 
+</a>
 
             <a
               href="/shop"

@@ -1,35 +1,43 @@
 const testimonials = [
   {
     id: 1,
-    name: "Amit Sharma",
-    role: "Verified Customer",
+    name: "Rohit Sharma",
+    role: "Business Owner",
     rating: 5,
     message:
-      "Excellent quality and fast delivery. The fitting and fabric exceeded my expectations.",
+      "After using Vastukkalp products, I noticed a positive shift in my office environment. My business growth has improved significantly.",
   },
   {
     id: 2,
     name: "Priya Mehta",
-    role: "Verified Customer",
-    rating: 4,
+    role: "Homemaker",
+    rating: 5,
     message:
-      "Stylish designs and premium feel. Customer support was very helpful.",
+      "The energy in my home feels so calm and peaceful now. These Vastu products truly bring harmony and positivity.",
   },
   {
     id: 3,
-    name: "Rahul Verma",
-    role: "Verified Customer",
-    rating: 5,
+    name: "Amit Patel",
+    role: "Entrepreneur",
+    rating: 4,
     message:
-      "HARVON has become my go-to brand. Highly recommended for quality lovers.",
+      "I was skeptical at first, but after placing the Vastu items correctly, I experienced better focus and success in my work.",
   },
   {
     id: 4,
-    name: "Neha Patel",
-    role: "Verified Customer",
+    name: "Neha Shah",
+    role: "Interior Designer",
+    rating: 5,
+    message:
+      "I recommend Vastukkalp products to my clients. They are beautifully designed and aligned with Vastu principles.",
+  },
+  {
+    id: 5,
+    name: "Karan Desai",
+    role: "IT Professional",
     rating: 4,
     message:
-      "Great experience overall. Packaging and delivery were top-notch.",
+      "Great quality and authentic products. I feel more positive and energetic at home after using them.",
   },
 ];
 

@@ -1,5 +1,170 @@
+// import { useState, useEffect } from "react";
+// import { FaTrash } from "react-icons/fa";
+// import { Link, useNavigate } from "react-router-dom";
+// import toast from "react-hot-toast";
+
+// export default function Wishlist() {
+//   const [wishlistItems, setWishlistItems] = useState([]);
+//   const navigate = useNavigate();
+
+//   // ✅ LOAD WISHLIST FROM LOCALSTORAGE
+//   useEffect(() => {
+//     const storedWishlist =
+//       JSON.parse(localStorage.getItem("wishlistItems")) || [];
+//     setWishlistItems(storedWishlist);
+//   }, []);
+
+//   // ✅ REMOVE FROM WISHLIST
+//   const removeFromWishlist = (id) => {
+//     const updatedWishlist = wishlistItems.filter(
+//       (item) => item.id !== id
+//     );
+//     setWishlistItems(updatedWishlist);
+//     localStorage.setItem(
+//       "wishlistItems",
+//       JSON.stringify(updatedWishlist)
+//     );
+
+// window.dispatchEvent(new Event("wishlistUpdated"));
+//     toast.success("Removed from wishlist");
+//   };
+
+//   // ✅ MOVE TO CART
+//   const moveToCart = (product) => {
+//     const cart =
+//       JSON.parse(localStorage.getItem("cartItems")) || [];
+
+//     const sizeToSend = product.selectedSize || product.sizes?.[0];
+
+//     const index = cart.findIndex(
+//       (item) =>
+//         item.id === product.id &&
+//         item.selectedSize === sizeToSend
+//     );
+
+//     if (index > -1) {
+//       cart[index].quantity += 1;
+//     } else {
+//       cart.push({
+//         id: product.id,
+//         name: product.name,
+//         price: product.price,
+//         image: product.images[0],
+//         quantity: 1,
+//         selectedSize: sizeToSend, // ✅ SAME SIZE
+//       });
+//     }
+
+//     localStorage.setItem("cartItems", JSON.stringify(cart));
+
+//     // Remove from wishlist
+//     const updatedWishlist = wishlistItems.filter(
+//       (item) =>
+//         !(
+//           item.id === product.id &&
+//           item.selectedSize === sizeToSend
+//         )
+//     );
+
+//     setWishlistItems(updatedWishlist);
+//     localStorage.setItem(
+//       "wishlistItems",
+//       JSON.stringify(updatedWishlist)
+//     );
+
+//     window.dispatchEvent(new Event("cartUpdated"));
+
+//     toast.success(`Moved to cart (Size: ${sizeToSend}) 🛒`);
+//     navigate("/cart");
+//   };
+
+
+
+//   // ✅ EMPTY STATE
+//   if (wishlistItems.length === 0) {
+//     return (
+//       <div className="py-20 text-center"  data-aos="fade-up">
+//         <h2 className="text-2xl font-heading font-bold mb-4">
+//           Your Wishlist is Empty
+//         </h2>
+//         <Link
+//           to="/shop"
+//           className="inline-block bg-primary text-white px-6 py-3 rounded"
+//         >
+//           Browse Products
+//         </Link>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <section className="py-10">
+//       <div className="max-w-7xl mx-auto px-6"  data-aos="fade-up">
+
+//         {/* PAGE TITLE */}
+//         <h1 className="text-3xl font-heading font-bold mb-10 text-primary">
+//           My Wishlist
+//         </h1>
+
+//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+//           {wishlistItems.map((item) => (
+//             <div
+//               key={item.id}
+//               className="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden hover:border border-primary"
+//             >
+//               <Link to={`/product/${item.id}`}>
+//                 <img
+//                   src={item.images[0]}
+//                   alt={item.name}
+//                   className="h-56 w-full object-cover"
+//                 />
+//               </Link>
+
+//               <div className="p-4">
+//                 <h3 className="font-heading font-semibold text-lg truncate">
+//                   {item.name}
+//                 </h3>
+//                 <div className="flex justify-between items-center mr-8">
+//                   <p className="text-primary font-bold mt-1">
+//                     ₹{item.price}
+//                   </p>
+
+//                   <p className="text-primary font-bold mt-1">
+//                     Size : {item.selectedSize}
+//                   </p>
+//                 </div>
+
+
+//                 <div className="flex gap-3 mt-4">
+
+//                   <button
+//                     onClick={() => moveToCart(item)}
+//                     className="flex-1 bg-primary text-white py-2 rounded flex items-center justify-center gap-2 hover:bg-secondary transition"
+//                   >
+//                     Move to Cart
+//                   </button>
+
+//                   <button
+//                     onClick={() => removeFromWishlist(item.id)}
+//                     className="w-12 border rounded flex items-center justify-center text-red-500 hover:bg-red-50"
+//                   >
+//                     <FaTrash />
+//                   </button>
+
+//                 </div>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+
+//       </div>
+//     </section>
+//   );
+// }
+
+
 import { useState, useEffect } from "react";
-import { FaTrash } from "react-icons/fa";
+import { FaTrash, FaShoppingCart, FaArrowRight } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
@@ -7,39 +172,25 @@ export default function Wishlist() {
   const [wishlistItems, setWishlistItems] = useState([]);
   const navigate = useNavigate();
 
-  // ✅ LOAD WISHLIST FROM LOCALSTORAGE
   useEffect(() => {
-    const storedWishlist =
-      JSON.parse(localStorage.getItem("wishlistItems")) || [];
+    const storedWishlist = JSON.parse(localStorage.getItem("wishlistItems")) || [];
     setWishlistItems(storedWishlist);
   }, []);
 
-  // ✅ REMOVE FROM WISHLIST
   const removeFromWishlist = (id) => {
-    const updatedWishlist = wishlistItems.filter(
-      (item) => item.id !== id
-    );
+    const updatedWishlist = wishlistItems.filter((item) => item.id !== id);
     setWishlistItems(updatedWishlist);
-    localStorage.setItem(
-      "wishlistItems",
-      JSON.stringify(updatedWishlist)
-    );
-
-window.dispatchEvent(new Event("wishlistUpdated"));
+    localStorage.setItem("wishlistItems", JSON.stringify(updatedWishlist));
+    window.dispatchEvent(new Event("wishlistUpdated"));
     toast.success("Removed from wishlist");
   };
 
-  // ✅ MOVE TO CART
   const moveToCart = (product) => {
-    const cart =
-      JSON.parse(localStorage.getItem("cartItems")) || [];
-
-    const sizeToSend = product.selectedSize || product.sizes?.[0];
+    const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
+    const sizeToSend = product.selectedSize || product.sizes?.[0] || "Standard";
 
     const index = cart.findIndex(
-      (item) =>
-        item.id === product.id &&
-        item.selectedSize === sizeToSend
+      (item) => item.id === product.id && item.selectedSize === sizeToSend
     );
 
     if (index > -1) {
@@ -51,107 +202,105 @@ window.dispatchEvent(new Event("wishlistUpdated"));
         price: product.price,
         image: product.images[0],
         quantity: 1,
-        selectedSize: sizeToSend, // ✅ SAME SIZE
+        selectedSize: sizeToSend,
       });
     }
 
     localStorage.setItem("cartItems", JSON.stringify(cart));
 
-    // Remove from wishlist
     const updatedWishlist = wishlistItems.filter(
-      (item) =>
-        !(
-          item.id === product.id &&
-          item.selectedSize === sizeToSend
-        )
+      (item) => !(item.id === product.id && item.selectedSize === sizeToSend)
     );
 
     setWishlistItems(updatedWishlist);
-    localStorage.setItem(
-      "wishlistItems",
-      JSON.stringify(updatedWishlist)
-    );
-
+    localStorage.setItem("wishlistItems", JSON.stringify(updatedWishlist));
     window.dispatchEvent(new Event("cartUpdated"));
-
-    toast.success(`Moved to cart (Size: ${sizeToSend}) 🛒`);
+    toast.success(`Moved to cart 🛒`);
     navigate("/cart");
   };
 
-
-
-  // ✅ EMPTY STATE
   if (wishlistItems.length === 0) {
     return (
-      <div className="py-20 text-center"  data-aos="fade-up">
-        <h2 className="text-2xl font-heading font-bold mb-4">
-          Your Wishlist is Empty
+      <div className="py-28 text-center bg-[#FCFBFA] min-h-[60vh] flex flex-col items-center justify-center px-6" data-aos="fade-up">
+        <div className="w-24 h-24 bg-orange-50 rounded-full flex items-center justify-center mb-6 text-orange-200">
+           <FaShoppingCart size={40} />
+        </div>
+        <h2 className="text-3xl font-heading font-bold mb-4 text-black">
+          Your Wishlist is <span className="text-orange-600 italic">Empty</span>
         </h2>
+        <p className="text-gray-500 mb-8 max-w-sm">Looks like you haven't saved any Vastu tools yet. Start exploring our collection.</p>
         <Link
           to="/shop"
-          className="inline-block bg-primary text-white px-6 py-3 rounded"
+          className="inline-flex items-center gap-3 bg-black text-white px-10 py-4 rounded-2xl font-bold hover:bg-orange-600 transition-all shadow-xl shadow-gray-200"
         >
-          Browse Products
+          Discover Products <FaArrowRight size={12} />
         </Link>
       </div>
     );
   }
 
   return (
-    <section className="py-10">
-      <div className="max-w-7xl mx-auto px-6"  data-aos="fade-up">
+    <section className="py-16 bg-[#FCFBFA] min-h-screen">
+      <div className="max-w-7xl mx-auto px-6" data-aos="fade-up">
 
         {/* PAGE TITLE */}
-        <h1 className="text-3xl font-heading font-bold mb-10 text-primary">
-          My Wishlist
-        </h1>
+        <div className="mb-12">
+          <h1 className="text-4xl md:text-5xl font-heading font-bold text-black mb-2">
+            My <span className="text-orange-600 italic font-serif">Wishlist</span>
+          </h1>
+          <div className="h-1.5 w-20 bg-orange-500 rounded-full"></div>
+        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
           {wishlistItems.map((item) => (
             <div
               key={item.id}
-              className="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden hover:border border-primary"
+              className="group bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:-translate-y-2 relative"
             >
-              <Link to={`/product/${item.id}`}>
-                <img
-                  src={item.images[0]}
-                  alt={item.name}
-                  className="h-56 w-full object-cover"
-                />
-              </Link>
+              {/* IMAGE SECTION */}
+              <div className="relative h-64 overflow-hidden bg-gray-50">
+                <Link to={`/product/${item.id}`}>
+                  <img
+                    src={item.images[0]}
+                    alt={item.name}
+                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                </Link>
+                <button
+                  onClick={() => removeFromWishlist(item.id)}
+                  className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-full text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-md"
+                  title="Remove from Wishlist"
+                >
+                  <FaTrash size={14} />
+                </button>
+              </div>
 
-              <div className="p-4">
-                <h3 className="font-heading font-semibold text-lg truncate">
+              {/* INFO SECTION */}
+              <div className="p-8">
+                <h3 className="font-heading font-bold text-xl text-black truncate mb-2">
                   {item.name}
                 </h3>
-                <div className="flex justify-between items-center mr-8">
-                  <p className="text-primary font-bold mt-1">
-                    ₹{item.price}
-                  </p>
-
-                  <p className="text-primary font-bold mt-1">
-                    Size : {item.selectedSize}
-                  </p>
+                
+                <div className="flex justify-between items-center mb-6">
+                  <div className="flex flex-col">
+                    <span className="text-xs text-gray-400 uppercase font-bold tracking-widest">Price</span>
+                    <span className="text-2xl font-bold text-black font-heading">₹{item.price}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-xs text-gray-400 uppercase font-bold tracking-widest">Selected Size</span>
+                    <p className="text-sm font-bold text-orange-600 bg-orange-50 px-3 py-1 rounded-lg mt-1 inline-block">
+                      {item.selectedSize}
+                    </p>
+                  </div>
                 </div>
 
-
-                <div className="flex gap-3 mt-4">
-
-                  <button
-                    onClick={() => moveToCart(item)}
-                    className="flex-1 bg-primary text-white py-2 rounded flex items-center justify-center gap-2 hover:bg-secondary transition"
-                  >
-                    Move to Cart
-                  </button>
-
-                  <button
-                    onClick={() => removeFromWishlist(item.id)}
-                    className="w-12 border rounded flex items-center justify-center text-red-500 hover:bg-red-50"
-                  >
-                    <FaTrash />
-                  </button>
-
-                </div>
+                <button
+                  onClick={() => moveToCart(item)}
+                  className="w-full bg-black text-white py-4 rounded-2xl flex items-center justify-center gap-3 font-bold hover:bg-orange-600 transition-all shadow-lg group-hover:shadow-orange-100"
+                >
+                  <FaShoppingCart size={16} />
+                  Move to Cart
+                </button>
               </div>
             </div>
           ))}

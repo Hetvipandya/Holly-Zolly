@@ -13,7 +13,7 @@ export default function Testimonials() {
 
         {/* SECTION HEADER */}
         <div className="text-center mb-12" data-aos="fade-up">
-          <h2 className="text-3xl font-heading font-bold text-primary">
+          <h2 className="text-3xl font-heading font-bold text-black">
             What Our Customers Say
           </h2>
           <p className="mt-2 text-gray-600">
