@@ -24,26 +24,27 @@ export default function Login() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // 🔥 EMAIL VALIDATION
+  // EMAIL VALIDATION
   const isValidEmail = (email) => {
     return /\S+@\S+\.\S+/.test(email);
   };
 
-  // 🚀 LOGIN HANDLER
+  // LOGIN
   const handleLogin = (e) => {
     e.preventDefault();
 
     const email = form.email.trim();
     const password = form.password;
 
-    // ✅ VALIDATIONS
+    // ❌ EMPTY CHECK
     if (!email || !password) {
-      toast.error("All fields are required");
+      toast.error("⚠️ All fields are required");
       return;
     }
 
+    // ❌ EMAIL CHECK
     if (!isValidEmail(email)) {
-      toast.error("Invalid email format");
+      toast.error("⚠️ Invalid email format");
       return;
     }
 
@@ -54,43 +55,44 @@ export default function Login() {
     );
 
     if (!user) {
-      toast.error("Invalid email or password");
+      toast.error("⚠️ Invalid email or password");
       return;
     }
 
-    // ✅ SAVE LOGIN USER
+    // ✅ SAVE USER
     localStorage.setItem("currentUser", JSON.stringify(user));
 
-    toast.success(`Welcome ${user.name.split(" ")[0]} 🎉`);
+    // 🎉 SUCCESS TOAST
+    toast.success(`🎉 Welcome ${user.name.split(" ")[0]}!`);
 
-    // 🔥 REDIRECT BACK (IMPORTANT UX)
-    const redirectTo = location.state?.from || "/";
-    navigate(redirectTo);
+    // smooth redirect
+    setTimeout(() => {
+      const redirectTo = location.state?.from || "/";
+      navigate(redirectTo);
+    }, 800);
   };
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-[#FCFBFA] py-16 px-6 relative overflow-hidden">
-      
+
       {/* BACKGROUND */}
       <div className="absolute top-0 left-0 w-96 h-96 bg-orange-100/40 rounded-full -ml-48 -mt-48 blur-3xl"></div>
       <div className="absolute bottom-0 right-0 w-80 h-80 bg-gray-100 rounded-full -mr-40 -mb-40 blur-3xl"></div>
 
       <div className="bg-white rounded-[3rem] shadow-[0_20px_70px_rgba(0,0,0,0.03)] border border-gray-100 w-full max-w-md overflow-hidden relative z-10">
-        
+
         {/* HEADER */}
         <div className="bg-black p-10 text-center">
-          <h2 className="text-2xl font-heading font-bold text-white uppercase tracking-widest">
-            Welcome{" "}
-            <span className="text-orange-500 italic lowercase">
-              Back
-            </span>
+          <h2 className="text-2xl font-bold text-white">
+            Welcome <span className="text-orange-500 italic">Back</span>
           </h2>
         </div>
 
         {/* FORM */}
         <div className="p-8 md:p-10">
+
           <form className="space-y-6" onSubmit={handleLogin}>
-            
+
             {/* EMAIL */}
             <div>
               <label className="text-xs text-gray-400 flex items-center gap-2">
@@ -112,10 +114,7 @@ export default function Login() {
                 <label className="text-xs text-gray-400 flex items-center gap-2">
                   <FaLock size={10} /> Password
                 </label>
-                <Link
-                  to="/forgot-password"
-                  className="text-xs text-orange-600 font-bold"
-                >
+                <Link to="/forgot-password" className="text-xs text-orange-600 font-bold">
                   Forgot?
                 </Link>
               </div>
@@ -146,20 +145,17 @@ export default function Login() {
             >
               Sign In <FaArrowRight size={12} />
             </button>
+
           </form>
 
-          {/* REGISTER LINK */}
+          {/* REGISTER */}
           <div className="mt-10 text-center">
-            <p className="text-xs text-gray-400">
-              New to Vastukkalp?
-            </p>
-            <Link
-              to="/register"
-              className="text-black font-bold hover:text-orange-600 underline"
-            >
+            <p className="text-xs text-gray-400">New to Vastukkalp?</p>
+            <Link to="/register" className="text-black font-bold hover:text-orange-600 underline">
               Create an Account
             </Link>
           </div>
+
         </div>
       </div>
     </section>

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import products from "../data/products"; // ✅ FIXED
+import products from "../data/products";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 
@@ -9,23 +9,20 @@ import "swiper/css/pagination";
 
 export default function NewArrivalsSwiper() {
 
-  // ✅ Latest products
   const newArrivals = products
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, 8);
 
   return (
-    <section className="py-20 bg-white relative overflow-hidden">
+    <section className="py-20 bg-white overflow-hidden">
 
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
         {/* HEADER */}
-        <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-4">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-600">
-              New <span className="text-orange-600">Vastu</span> Arrivals
-            </h2>
-          </div>
+        <div className="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-600 text-center md:text-left">
+            New <span className="text-orange-600">Vastu</span> Arrivals
+          </h2>
 
           <Link to="/shop" className="bg-gray-600 text-white px-5 py-2 rounded-full">
             Explore All →
@@ -33,42 +30,89 @@ export default function NewArrivalsSwiper() {
         </div>
 
         {/* SWIPER */}
-        <Swiper 
-          modules={[Autoplay, Navigation, Pagination]}
-          spaceBetween={25}
-          autoplay={{ delay: 4000 }}
-          navigation
-          pagination={{ clickable: true }}
-          loop
-          breakpoints={{
-            320: { slidesPerView: 1.3 },
-            640: { slidesPerView: 2 },
-            1024: { slidesPerView: 4 },
-          }}
-        >
-          {newArrivals.map((item) => (
-            <SwiperSlide key={item.id}>
-              <div className="group bg-white rounded-2xl p-3 shadow">
+        <div className="relative pb-12"> {/* 👈 dots space fix */}
+          <Swiper
+            modules={[Autoplay, Navigation, Pagination]}
+            spaceBetween={15}
+            autoplay={{ delay: 3000 }}
+            navigation
+            pagination={{ clickable: true }}
+            loop
+            className="custom-swiper"
+            breakpoints={{
+              0: {
+                slidesPerView: 1.1,
+                spaceBetween: 10,
+                navigation: false,
+              },
+              640: {
+                slidesPerView: 2,
+                spaceBetween: 15,
+                navigation: false,
+              },
+              1024: {
+                slidesPerView: 4,
+                spaceBetween: 25,
+                navigation: true,
+              },
+            }}
+          >
+            {newArrivals.map((item) => (
+              <SwiperSlide key={item.id}>
+                <div className="group bg-white rounded-2xl p-3 shadow h-full">
 
-                {/* ✅ CLICK → PRODUCT DETAIL */}
-                <Link to={`/product/${item.id}`}>
-                  <div className="h-64 overflow-hidden rounded-xl">
-                    <img
-                      src={item.images[0]} // ✅ FIXED
-                      alt={item.name}
-                      className="h-full w-full object-cover group-hover:scale-110 transition"
-                    />
+                  <Link to={`/product/${item.id}`}>
+                    <div className="h-56 sm:h-64 overflow-hidden rounded-xl">
+                      <img
+                        src={item.images[0]}
+                        alt={item.name}
+                        className="h-full w-full object-cover group-hover:scale-110 transition"
+                      />
+                    </div>
+                  </Link>
+
+                  <div className="pt-4 text-center">
+                    <h3 className="font-bold text-sm sm:text-base">
+                      {item.name}
+                    </h3>
                   </div>
-                </Link>
 
-                <div className="pt-4 text-center">
-                  <h3 className="font-bold">{item.name}</h3>
                 </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
 
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+        {/* ================= CUSTOM CSS ================= */}
+        <style>{`
+          /* ARROWS ORANGE */
+          .custom-swiper .swiper-button-next,
+          .custom-swiper .swiper-button-prev {
+            color: #f97316 !important;
+          }
+
+          /* DOTS FIXED BELOW IMAGE */
+          .custom-swiper .swiper-pagination {
+            bottom: 0px !important;
+          }
+
+          .custom-swiper .swiper-pagination-bullet {
+            background: #f97316 !important;
+            opacity: 0.4;
+          }
+
+          .custom-swiper .swiper-pagination-bullet-active {
+            opacity: 1;
+          }
+
+          /* MOBILE CLEAN FIX */
+          @media (max-width: 640px) {
+            .custom-swiper .swiper-button-next,
+            .custom-swiper .swiper-button-prev {
+              display: none !important;
+            }
+          }
+        `}</style>
 
       </div>
     </section>
