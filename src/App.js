@@ -13,7 +13,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword";
 import Orders from "./pages/orders/Orders";
 import OrderDetails from "./pages/orders/OrderDetails";
 
-import AdminLayout from "./admin/AdminLayout";
+import AdminLayout from "./admin/AdminLayout"; 
 import Dashboard from "./admin/Dashboard";
 import Products from "./admin/products/Products";
 

@@ -1,31 +1,31 @@
 const categories = [
   {
     id: 1,
-    name: "Lotus",
-    image:
-      "/image/products/Vastukkalp Lotus.jpeg",
-      status : "active",
+    name: "Vedic Vastukkalp Lotus",
+    slug: "Vedic Vastukkalp Aayudh",
+    image: "/image/products/Vastukkalp Lotus.jpeg",
+    status: "active",
   },
   { 
     id: 2,
-    name: "Rudraksh ",
-    image:
-      "/image/products/Vastukkalp Rudraksh Kavach.jpeg",
-      status : "active",
+    name: "Kamal Kalp Yantra",
+    slug: "Kamal Kalp Yantra",
+    image: "/image/products/yantra/yantra.jpeg", 
+    status: "active",
   },
-  {
+  { 
     id: 3,
-    name: "Sriparni box",
-    image:
-      "/image/products/Vastukkalp Sriparni box.jpeg",
-      status : "active",
+    name: "Charoit Rath",
+    slug: "Charoit Rath",
+    image: "/image/products/rath/rath.jpeg",
+    status: "active",
   },
   {
     id: 4,
-    name: "Accessories",
-    image:
-      "/image/products/Vastukkalp Vajra.jpeg",
-      status : "active",
+    name: "Aayudh Frame",
+    slug: "Aayudh Frame",
+    image: "/image/products/Vastukkalp Vajra.jpeg",
+    status: "active",
   },
 ];
 
