@@ -14,18 +14,7 @@
 //   const [openSearch, setOpenSearch] = useState(false);
 //   const [cartCount, setCartCount] = useState(0);
 //   const [user, setUser] = useState(null);
-
-//   // 🔥 MOBILE CATEGORY OPEN STATE
 //   const [openCategory, setOpenCategory] = useState(false);
-
-//   const categories = [
-//     "all",
-//     "Vedic Vastukkalp Aayudh",
-//     "Aayudh Frame",
-//     "Vastu Shashtra Book",
-//     "Kamal Kalp Yantra",
-//     "Charoit Rath",
-//   ];
 
 //   useEffect(() => {
 //     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -43,9 +32,12 @@
 //     };
 
 //     updateCounts();
+
 //     window.addEventListener("cartUpdated", updateCounts);
 
-//     return () => window.removeEventListener("cartUpdated", updateCounts);
+//     return () => {
+//       window.removeEventListener("cartUpdated", updateCounts);
+//     };
 //   }, []);
 
 //   useEffect(() => {
@@ -53,27 +45,44 @@
 //     return () => (document.body.style.overflow = "auto");
 //   }, [open]);
 
+//   const navLinkClass = ({ isActive }) =>
+//     isActive
+//       ? "text-black font-semibold border-b-2 border-black pb-1"
+//       : "text-black hover:text-gray-700";
+
 //   return (
 //     <>
-//       {/* NAVBAR */}
 //       <nav className="fixed top-0 left-0 w-full z-[99999] bg-gray-300 shadow-md">
 //         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
-//           <NavLink to="/">
-//             <img src="/image/logo/LOGO.png" className="h-14" />
+//           {/* LOGO */}
+//           <NavLink to="/" onClick={() => setOpen(false)}>
+//             <img
+//               src="/image/logo/LOGO.png"
+//               alt="Logo"
+//               className="h-14 md:h-16 lg:h-20 object-contain"
+//             />
 //           </NavLink>
 
-//           {/* DESKTOP MENU (UNCHANGED) */}
-//           <ul className="hidden md:flex gap-8 items-center">
-//             <li><NavLink to="/">Home</NavLink></li>
-//             <li><NavLink to="/about">About</NavLink></li>
+//           {/* DESKTOP MENU */}
+//           <ul className="hidden md:flex gap-8 text-base md:text-lg items-center">
+//             <li><NavLink to="/" className={navLinkClass}>Home</NavLink></li>
+//             <li><NavLink to="/about" className={navLinkClass}>About</NavLink></li>
 
-//             {/* DESKTOP CATEGORY HOVER */}
 //             <li className="relative group">
-//               <NavLink to="/shop">Category</NavLink>
+//               <NavLink to="/shop" className={navLinkClass}>
+//                 Category
+//               </NavLink>
 
-//               <ul className="absolute left-0 top-full pt-2 w-52 bg-white shadow-lg rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition">
-//                 {categories.map((cat) => (
+//               <ul className="absolute left-0 top-full pt-2 w-52 bg-white shadow-lg rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200">
+//                 {[
+//                   "all",
+//                   "Vedic Vastukkalp Aayudh",
+//                   "Aayudh Frame",
+//                   "Vastu Shashtra Book",
+//                   "Kamal Kalp Yantra",
+//                   "Charoit Rath",
+//                 ].map((cat) => (
 //                   <li key={cat}>
 //                     <NavLink
 //                       to={`/shop?category=${cat}`}
@@ -86,26 +95,55 @@
 //               </ul>
 //             </li>
 
-//             <li><NavLink to="/orders">Orders</NavLink></li>
+//             <li><NavLink to="/orders" className={navLinkClass}>Orders</NavLink></li>
 //           </ul>
 
 //           {/* ICONS */}
-//           <div className="hidden md:flex gap-5">
-//             <FiSearch onClick={() => setOpenSearch(true)} />
-//             <FiHeart />
-//             <FiShoppingCart />
-//             <FiUser />
+//           <div className="hidden md:flex items-center gap-6">
+
+//             <button onClick={() => setOpenSearch(true)}>
+//               <FiSearch size={22} />
+//             </button>
+
+//             {/* ❤️ Wishlist (NO COUNT) */}
+//             <NavLink to="/wishlist" className="w-8 h-8 flex items-center justify-center">
+//               <FiHeart size={22} />
+//             </NavLink>
+
+//             {/* 🛒 Cart */}
+//             <NavLink to="/cart" className="relative w-8 h-8 flex items-center justify-center">
+//               <FiShoppingCart size={22} />
+//               {cartCount > 0 && (
+//                 <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
+//                   {cartCount}
+//                 </span>
+//               )}
+//             </NavLink>
+
+//             {/* 👤 User */}
+//             {user ? (
+//               <div className="w-8 h-8 flex items-center justify-center cursor-pointer">
+//                 <FiUser size={22} />
+//               </div>
+//             ) : (
+//               <NavLink to="/login" className="w-8 h-8 flex items-center justify-center">
+//                 <FiUser size={22} />
+//               </NavLink>
+//             )}
 //           </div>
 
-//           <button className="md:hidden text-2xl" onClick={() => setOpen(true)}>
+//           {/* MOBILE MENU BUTTON */}
+//           <button
+//             className="md:hidden text-2xl"
+//             onClick={() => setOpen(true)}
+//           >
 //             <FaBars />
 //           </button>
 //         </div>
 //       </nav>
 
-//       <div className="h-[90px]" />
+//       <div className="h-[90px] md:h-[100px] lg:h-[110px]" />
 
-//       {/* BACKDROP */}
 //       {open && (
 //         <div
 //           className="fixed inset-0 bg-black/50 z-[99998]"
@@ -119,57 +157,47 @@
 //           open ? "translate-x-0" : "-translate-x-full"
 //         }`}
 //       >
-//         <div className="flex justify-between p-4 border-b">
-//           <FaTimes onClick={() => setOpen(false)} />
+//         <div className="flex justify-between items-center p-4 border-b">
+//           <FaTimes onClick={() => setOpen(false)} className="cursor-pointer text-xl" />
 //         </div>
 
-//         <ul className="flex flex-col p-4 gap-4">
+//         <ul className="flex flex-col p-4 gap-4 text-lg">
+//           <NavLink to="/" onClick={() => setOpen(false)}>Home</NavLink>
+//           <NavLink to="/about" onClick={() => setOpen(false)}>About</NavLink>
 
-//           <NavLink onClick={() => setOpen(false)} to="/">Home</NavLink>
-//           <NavLink onClick={() => setOpen(false)} to="/about">About</NavLink>
-
-//           {/* 🔥 MOBILE CATEGORY (ACCORDION STYLE) */}
-//           <div>
-//             <button
-//               onClick={() => setOpenCategory(!openCategory)}
-//               className="w-full text-left font-medium"
-//             >
-//               Category ▾
-//             </button>
-
-//             {openCategory && (
-//               <div className="ml-3 mt-2 flex flex-col gap-2">
-//                 {categories.map((cat) => (
-//                   <NavLink
-//                     key={cat}
-//                     to={`/shop?category=${cat}`}
-//                     onClick={() => setOpen(false)}
-//                     className="text-sm text-gray-700 hover:text-black"
-//                   >
-//                     {cat}
-//                   </NavLink>
-//                 ))}
-//               </div>
-//             )}
-//           </div>
-
-//           <NavLink onClick={() => setOpen(false)} to="/orders">
-//             Orders
-//           </NavLink>
+//           <NavLink to="/orders" onClick={() => setOpen(false)}>Orders</NavLink>
 //         </ul>
-//       </div>
-
-//       {/* MOBILE BOTTOM BAR (UNCHANGED) */}
-//       <div className="fixed bottom-0 left-0 w-full bg-gray-300 flex justify-around py-3 md:hidden">
-//         <FiSearch onClick={() => setOpenSearch(true)} />
-//         <FiHeart />
-//         <FiShoppingCart />
-//         <FiUser />
 //       </div>
 
 //       {openSearch && (
 //         <SearchModal onClose={() => setOpenSearch(false)} />
 //       )}
+
+//       {/* MOBILE BOTTOM BAR */}
+//       <div className="fixed bottom-0 left-0 w-full bg-gray-300 flex justify-around py-3 md:hidden z-[99999]">
+//         <button onClick={() => setOpenSearch(true)}>
+//           <FiSearch size={24} />
+//         </button>
+
+//         {/* ❤️ Wishlist (NO COUNT) */}
+//         <NavLink to="/wishlist" className="w-8 h-8 flex items-center justify-center">
+//           <FiHeart size={24} />
+//         </NavLink>
+
+//         {/* 🛒 Cart */}
+//         <NavLink to="/cart" className="relative w-8 h-8 flex items-center justify-center">
+//           <FiShoppingCart size={24} />
+//           {cartCount > 0 && (
+//             <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
+//               {cartCount}
+//             </span>
+//           )}
+//         </NavLink>
+
+//         <NavLink to="/login" className="w-8 h-8 flex items-center justify-center">
+//           <FiUser size={24} />
+//         </NavLink>
+//       </div>
 //     </>
 //   );
 // }
@@ -219,7 +247,9 @@ export default function Navbar() {
     updateCounts();
     window.addEventListener("cartUpdated", updateCounts);
 
-    return () => window.removeEventListener("cartUpdated", updateCounts);
+    return () => {
+      window.removeEventListener("cartUpdated", updateCounts);
+    };
   }, []);
 
   useEffect(() => {
@@ -227,25 +257,36 @@ export default function Navbar() {
     return () => (document.body.style.overflow = "auto");
   }, [open]);
 
+  const navLinkClass = ({ isActive }) =>
+    isActive
+      ? "text-black font-semibold border-b-2 border-black pb-1"
+      : "text-black hover:text-gray-700";
+
   return (
     <>
-      {/* NAVBAR */}
       <nav className="fixed top-0 left-0 w-full z-[99999] bg-gray-300 shadow-md">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
 
-          <NavLink to="/">
-            <img src="/image/logo/LOGO.png" className="h-14" />
+          {/* LOGO */}
+          <NavLink to="/" onClick={() => setOpen(false)}>
+            <img
+              src="/image/logo/LOGO.png"
+              alt="Logo"
+              className="h-14 md:h-16 lg:h-20 object-contain"
+            />
           </NavLink>
 
           {/* DESKTOP MENU */}
-          <ul className="hidden md:flex gap-8 items-center">
-            <li><NavLink to="/">Home</NavLink></li>
-            <li><NavLink to="/about">About</NavLink></li>
+          <ul className="hidden md:flex gap-8 text-base md:text-lg items-center">
+            <li><NavLink to="/" className={navLinkClass}>Home</NavLink></li>
+            <li><NavLink to="/about" className={navLinkClass}>About</NavLink></li>
 
             <li className="relative group">
-              <NavLink to="/shop">Category</NavLink>
+              <NavLink to="/shop" className={navLinkClass}>
+                Category
+              </NavLink>
 
-              <ul className="absolute left-0 top-full pt-2 w-52 bg-white shadow-lg rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition">
+              <ul className="absolute left-0 top-full pt-2 w-52 bg-white shadow-lg rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition duration-200">
                 {categories.map((cat) => (
                   <li key={cat}>
                     <NavLink
@@ -259,26 +300,52 @@ export default function Navbar() {
               </ul>
             </li>
 
-            <li><NavLink to="/orders">Orders</NavLink></li>
+            <li><NavLink to="/orders" className={navLinkClass}>Orders</NavLink></li>
           </ul>
 
           {/* ICONS */}
-          <div className="hidden md:flex gap-5">
-            <FiSearch onClick={() => setOpenSearch(true)} />
-            <FiHeart />
-            <FiShoppingCart />
-            <FiUser />
+          <div className="hidden md:flex items-center gap-6">
+
+            <button onClick={() => setOpenSearch(true)}>
+              <FiSearch size={22} />
+            </button>
+
+            <NavLink to="/wishlist" className="w-8 h-8 flex items-center justify-center">
+              <FiHeart size={22} />
+            </NavLink>
+
+            <NavLink to="/cart" className="relative w-8 h-8 flex items-center justify-center">
+              <FiShoppingCart size={22} />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
+                  {cartCount}
+                </span>
+              )}
+            </NavLink>
+
+            {user ? (
+              <div className="w-8 h-8 flex items-center justify-center cursor-pointer">
+                <FiUser size={22} />
+              </div>
+            ) : (
+              <NavLink to="/login" className="w-8 h-8 flex items-center justify-center">
+                <FiUser size={22} />
+              </NavLink>
+            )}
           </div>
 
-          <button className="md:hidden text-2xl" onClick={() => setOpen(true)}>
+          {/* MOBILE MENU BUTTON */}
+          <button
+            className="md:hidden text-2xl"
+            onClick={() => setOpen(true)}
+          >
             <FaBars />
           </button>
         </div>
       </nav>
 
-      <div className="h-[90px]" />
+      <div className="h-[90px] md:h-[100px] lg:h-[110px]" />
 
-      {/* BACKDROP */}
       {open && (
         <div
           className="fixed inset-0 bg-black/50 z-[99998]"
@@ -292,59 +359,60 @@ export default function Navbar() {
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex justify-between p-4 border-b">
-          <FaTimes onClick={() => setOpen(false)} />
+        <div className="flex justify-between items-center p-4 border-b">
+          <FaTimes
+            onClick={() => setOpen(false)}
+            className="cursor-pointer text-xl"
+          />
         </div>
 
-        <ul className="flex flex-col p-4 gap-4">
+        <ul className="flex flex-col p-4 gap-4 text-lg">
 
-          <NavLink onClick={() => setOpen(false)} to="/">Home</NavLink>
-          <NavLink onClick={() => setOpen(false)} to="/about">About</NavLink>
+          <NavLink to="/" onClick={() => setOpen(false)}>
+            Home
+          </NavLink>
 
-          {/* CATEGORY ACCORDION */}
-          <div>
-            <button
-              onClick={() => setOpenCategory(!openCategory)}
-              className="w-full text-left font-medium"
-            >
-              Category ▾
-            </button>
+          <NavLink to="/about" onClick={() => setOpen(false)}>
+            About
+          </NavLink>
 
-            {openCategory && (
-              <div className="ml-3 mt-2 flex flex-col gap-2">
-                {categories.map((cat) => (
-                  <NavLink
-                    key={cat}
-                    to={`/shop?category=${cat}`}
-                    onClick={() => setOpen(false)}
-                    className="text-sm text-gray-700 hover:text-black"
-                  >
-                    {cat}
-                  </NavLink>
-                ))}
-              </div>
-            )}
+          {/* 🔥 CATEGORY ADDED IN MOBILE */}
+          <div className="flex flex-col gap-2">
+            <p className="font-semibold">Category</p>
+
+            {categories.map((cat) => (
+              <NavLink
+                key={cat}
+                to={`/shop?category=${cat}`}
+                onClick={() => setOpen(false)}
+                className="text-sm text-gray-700 ml-2 hover:text-black"
+              >
+                {cat}
+              </NavLink>
+            ))}
           </div>
 
-          <NavLink onClick={() => setOpen(false)} to="/orders">
+          <NavLink to="/orders" onClick={() => setOpen(false)}>
             Orders
           </NavLink>
         </ul>
       </div>
 
-      {/* 🔥 FIXED MOBILE BOTTOM BAR */}
-      <div className="fixed bottom-0 left-0 w-full bg-gray-300 flex justify-around items-center py-3 md:hidden z-[999999] border-t border-gray-400 pb-[env(safe-area-inset-bottom)]">
+      {openSearch && <SearchModal onClose={() => setOpenSearch(false)} />}
 
-        <button onClick={() => setOpenSearch(true)} className="flex flex-col items-center">
-          <FiSearch size={22} />
+      {/* MOBILE BOTTOM BAR */}
+      <div className="fixed bottom-0 left-0 w-full bg-gray-300 flex justify-around py-3 md:hidden z-[99999]">
+
+        <button onClick={() => setOpenSearch(true)}>
+          <FiSearch size={24} />
         </button>
 
-        <NavLink to="/wishlist" className="flex flex-col items-center">
-          <FiHeart size={22} />
+        <NavLink to="/wishlist" className="w-8 h-8 flex items-center justify-center">
+          <FiHeart size={24} />
         </NavLink>
 
-        <NavLink to="/cart" className="relative flex flex-col items-center">
-          <FiShoppingCart size={22} />
+        <NavLink to="/cart" className="relative w-8 h-8 flex items-center justify-center">
+          <FiShoppingCart size={24} />
           {cartCount > 0 && (
             <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
               {cartCount}
@@ -352,15 +420,10 @@ export default function Navbar() {
           )}
         </NavLink>
 
-        <NavLink to={user ? "/profile" : "/login"} className="flex flex-col items-center">
-          <FiUser size={22} />
+        <NavLink to="/login" className="w-8 h-8 flex items-center justify-center">
+          <FiUser size={24} />
         </NavLink>
-
       </div>
-
-      {openSearch && (
-        <SearchModal onClose={() => setOpenSearch(false)} />
-      )}
     </>
   );
 }
