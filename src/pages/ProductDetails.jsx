@@ -12,11 +12,34 @@ export default function ProductDetails() {
 
   const [activeImage, setActiveImage] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  // 🔥 Toast Style (same for both)
+  const toastStyle = {
+    position: "bottom-right",
+    style: {
+      background: "#4B5563",
+      color: "#fff",
+      borderRadius: "10px",
+    },
+  };
 
   useEffect(() => {
     if (product) {
       setActiveImage(product.images?.[0] || "");
       setSelectedSize(product.sizes?.[0] || "");
+
+      // check wishlist
+      const wishlist =
+        JSON.parse(localStorage.getItem("wishlistItems")) || [];
+
+      const exists = wishlist.find(
+        (item) =>
+          item.id === product.id &&
+          item.selectedSize === (product.sizes?.[0] || "")
+      );
+
+      setIsWishlisted(!!exists);
     }
   }, [product]);
 
@@ -24,6 +47,7 @@ export default function ProductDetails() {
     return <div className="p-10 text-center">Product Not Found</div>;
   }
 
+  // 🛒 ADD TO CART
   const addToCart = () => {
     const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
 
@@ -48,16 +72,57 @@ export default function ProductDetails() {
 
     localStorage.setItem("cartItems", JSON.stringify(cart));
     window.dispatchEvent(new Event("cartUpdated"));
-    toast.success("Added to cart 🛒");
+
+    toast.success("Added to cart 🛒", toastStyle);
+  };
+
+  // ❤️ WISHLIST FUNCTION
+  const toggleWishlist = () => {
+    const wishlist =
+      JSON.parse(localStorage.getItem("wishlistItems")) || [];
+
+    const index = wishlist.findIndex(
+      (item) =>
+        item.id === product.id &&
+        item.selectedSize === selectedSize
+    );
+
+    if (index > -1) {
+      // remove
+      wishlist.splice(index, 1);
+      setIsWishlisted(false);
+      toast.success("Removed from wishlist ❌", toastStyle);
+    } else {
+      // add
+      wishlist.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        images: product.images,
+        selectedSize,
+      });
+      setIsWishlisted(true);
+      toast.success("Added to wishlist ❤️", toastStyle);
+    }
+
+    localStorage.setItem("wishlistItems", JSON.stringify(wishlist));
+    window.dispatchEvent(new Event("wishlistUpdated"));
   };
 
   return (
     <section className="py-10">
       <div className="max-w-6xl mx-auto px-6">
 
-        <Link to="/shop" className="flex gap-2 mb-6">
-          <FiArrowLeft /> Back
-        </Link>
+       <Link
+  to="/shop"
+  className="inline-flex items-center gap-2 mb-6 text-gray-600 font-medium hover:text-black transition-all duration-300 group"
+>
+  <FiArrowLeft className="transition-transform duration-300 group-hover:-translate-x-1" />
+  <span className="relative">
+    Back
+    <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-black transition-all duration-300 group-hover:w-full"></span>
+  </span>
+</Link>
 
         <div className="grid md:grid-cols-2 gap-10">
 
@@ -87,9 +152,8 @@ export default function ProductDetails() {
               {product.name}
             </h1>
 
-            {/* 🔥 PRICE SECTION FIX */}
+            {/* PRICE */}
             <div className="mt-3 flex items-center gap-3">
-              
               <p className="text-orange-600 text-2xl font-bold">
                 ₹{product.price}
               </p>
@@ -109,7 +173,6 @@ export default function ProductDetails() {
                   )}% OFF
                 </span>
               )}
-
             </div>
 
             <p className="mt-4 text-gray-600">
@@ -147,7 +210,13 @@ export default function ProductDetails() {
                 Add to Cart
               </button>
 
-              <button className="border px-4 py-2 rounded">
+              {/* ❤️ WISHLIST BUTTON */}
+              <button
+                onClick={toggleWishlist}
+                className={`border px-4 py-2 rounded ${
+                  isWishlisted ? "bg-red-500 text-white" : ""
+                }`}
+              >
                 <FaHeart />
               </button>
             </div>
@@ -176,7 +245,6 @@ export default function ProductDetails() {
                   />
                   <p className="mt-2">{item.name}</p>
 
-                  {/* 🔥 PRICE */}
                   <div className="flex gap-2">
                     <p className="text-orange-600">
                       ₹{item.price}

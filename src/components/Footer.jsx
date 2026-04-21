@@ -50,7 +50,6 @@ export default function Footer() {
             Customer Service
           </h4>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/careers" className="hover:text-gray-700">Career</Link></li>
             <li><Link to="/faq" className="hover:text-gray-700">FAQ</Link></li>
             <li><Link to="/returns" className="hover:text-gray-700">Returns</Link></li>
             <li><Link to="/privacy-policy" className="hover:text-gray-700">Privacy Policy</Link></li>

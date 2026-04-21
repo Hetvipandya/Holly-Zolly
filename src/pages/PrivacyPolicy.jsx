@@ -1,67 +1,84 @@
-
 export default function PrivacyPolicy() {
-    return (<>
-        <main className="bg-white"  data-aos="fade-up">
-            <section className="py-10 bg-gray-50">
+    return (
+        <main className="bg-[#f8f5f0]" data-aos="fade-up">
+
+            {/* HEADER */}
+            <section className="py-10 bg-[#f1ece3]">
                 <div className="max-w-4xl mx-auto px-6">
-                    <h1 className="text-3xl md:text-4xl font-heading font-bold text-primary">
+                    <h1 className="text-3xl md:text-4xl font-bold text-[#1e293b] font-serif">
                         Privacy Policy
                     </h1>
                 </div>
             </section>
 
+            {/* CONTENT */}
             <section className="py-10">
-                <div className="max-w-4xl mx-auto px-6 prose prose-gray ">
-                <p>
-                    At HARVON, we value your privacy and are committed to protecting
-                    your personal information. This Privacy Policy explains how we
-                    collect, use, and safeguard your data.
-                </p>
+                <div className="max-w-4xl mx-auto px-6 space-y-6 text-gray-700 leading-relaxed">
 
-                <h3>Information We Collect</h3>
-                <ul>
-                    <li>Name, email address, phone number</li>
-                    <li>Shipping and billing address</li>
-                    <li>Payment details (processed securely via payment gateways)</li>
-                    <li>Browsing and purchase history</li>
-                </ul>
+                    <p>
+                        At <strong>HOLLY ZOLLY</strong>, we respect your privacy and are
+                        committed to protecting your personal information. This policy
+                        explains how we collect, use, and safeguard your data when you
+                        use our services.
+                    </p>
 
-                <h3>How We Use Your Information</h3>
-                <ul>
-                    <li>To process and deliver your orders</li>
-                    <li>To communicate order updates and offers</li>
-                    <li>To improve our website and services</li>
-                    <li>To comply with legal obligations</li>
-                </ul>
+                    <h3 className="text-xl font-semibold text-[#1e293b]">
+                        Information We Collect
+                    </h3>
+                    <ul className="list-disc pl-5">
+                        <li>Name, phone number, and email address</li>
+                        <li>Property details shared for Vastu consultation</li>
+                        <li>Location details for site visits or analysis</li>
+                        <li>Any information you provide during consultation</li>
+                    </ul>
 
-                <h3>Data Security</h3>
-                <p>
-                    We implement industry-standard security measures to protect your
-                    personal data against unauthorized access or misuse.
-                </p>
+                    <h3 className="text-xl font-semibold text-[#1e293b]">
+                        How We Use Your Information
+                    </h3>
+                    <ul className="list-disc pl-5">
+                        <li>To provide personalized Vastu consultation and reports</li>
+                        <li>To communicate regarding appointments and services</li>
+                        <li>To improve our services and client experience</li>
+                        <li>To comply with legal requirements</li>
+                    </ul>
 
-                <h3>Third-Party Services</h3>
-                <p>
-                    We may share limited data with trusted third-party services such
-                    as payment gateways and logistics partners solely for order
-                    fulfillment.
-                </p>
+                    <h3 className="text-xl font-semibold text-[#1e293b]">
+                        Data Security
+                    </h3>
+                    <p>
+                        We take appropriate security measures to protect your personal
+                        and property-related information from unauthorized access,
+                        misuse, or disclosure.
+                    </p>
 
-                <h3>Your Rights</h3>
-                <p>
-                    You have the right to access, update, or request deletion of your
-                    personal data by contacting our support team.
-                </p>
+                    <h3 className="text-xl font-semibold text-[#1e293b]">
+                        Third-Party Sharing
+                    </h3>
+                    <p>
+                        We do not sell or share your personal information with third
+                        parties, except when required for service delivery or legal
+                        obligations.
+                    </p>
 
-                <h3>Contact Us</h3>
-                <p>
-                    For any privacy-related concerns, email us at
-                    <strong> support@harvon.com</strong>.
-                </p>
-            </div>
-        </section>
-    </main >
+                    <h3 className="text-xl font-semibold text-[#1e293b]">
+                        Your Rights
+                    </h3>
+                    <p>
+                        You have the right to access, update, or request deletion of
+                        your personal data by contacting us directly.
+                    </p>
 
-    </>
-  );
+                    <h3 className="text-xl font-semibold text-[#1e293b]">
+                        Contact Us
+                    </h3>
+                    <p>
+                        For any privacy-related concerns, please email us at
+                        <strong> vastukkalp2007gmail.com</strong>.
+                    </p>
+
+                </div>
+            </section>
+
+        </main>
+    );
 }

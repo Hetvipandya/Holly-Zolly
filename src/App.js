@@ -28,6 +28,7 @@ import Careers from "./pages/Careers";
 import Contact from "./pages/Contact";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
+import FAQ from "./pages/FAQ";
 import ReturnPolicy from "./pages/ReturnPolicy";
 import ProductAdd from "./admin/products/ProductAdd";
 import ProductEdit from "./admin/products/ProductEdit";
@@ -62,6 +63,7 @@ function App() {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<TermsConditions />} />
         <Route path="/returns" element={<ReturnPolicy />} />
+        <Route path="/faq" element={<FAQ />} />
 
 
 
