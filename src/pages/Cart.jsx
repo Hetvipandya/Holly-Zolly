@@ -229,13 +229,20 @@ export default function Cart() {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
 
-  const toastStyle = {
-    position: "bottom-right",
-    style: {
-      background: "#4B5563",
-      color: "#fff",
-      borderRadius: "10px",
-    },
+  // ✅ RESPONSIVE TOAST
+  const getToastStyle = () => {
+    const isMobile = window.innerWidth < 768;
+
+    return {
+      position: isMobile ? "top-center" : "bottom-right",
+      style: {
+        background: "#4B5563",
+        color: "#fff",
+        borderRadius: "10px",
+        marginTop: isMobile ? "60px" : "0px",
+        marginBottom: !isMobile ? "20px" : "0px",
+      },
+    };
   };
 
   useEffect(() => {
@@ -273,7 +280,7 @@ export default function Cart() {
 
   const removeItem = (id) => {
     setCartItems((prev) => prev.filter((item) => item.id !== id));
-    toast.success("Item removed from cart ❌", toastStyle);
+    toast.success("Item removed from cart", getToastStyle());
   };
 
   const cartTotal = cartItems.reduce(
@@ -285,7 +292,7 @@ export default function Cart() {
     const user = JSON.parse(localStorage.getItem("currentUser"));
 
     if (!user) {
-      toast.error("Please login first", toastStyle);
+      toast.error("Please login first", getToastStyle());
       navigate("/login");
       return;
     }
@@ -295,7 +302,7 @@ export default function Cart() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="py-28 text-center min-h-[60vh] flex flex-col items-center justify-center px-6">
+      <div className="py-24 text-center min-h-[60vh] flex flex-col items-center justify-center px-4">
         <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-5 text-gray-300">
           <FaShoppingBag size={32} />
         </div>
@@ -320,14 +327,14 @@ export default function Cart() {
 
   return (
     <section className="py-10 md:py-16 bg-[#FCFBFA] min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 md:px-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
         {/* TITLE */}
-        <h1 className="text-2xl md:text-5xl font-bold mb-6">
+        <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-6">
           Shopping <span className="text-orange-600 italic">Cart</span>
         </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10">
 
           {/* CART ITEMS */}
           <div className="lg:col-span-2 space-y-4 md:space-y-6">
@@ -341,7 +348,7 @@ export default function Cart() {
                 {/* IMAGE */}
                 <img
                   src={item.image}
-                  className="w-full sm:w-28 h-28 object-cover rounded-xl"
+                  className="w-full sm:w-28 h-40 sm:h-28 object-cover rounded-xl"
                   alt={item.name}
                 />
 
@@ -386,7 +393,7 @@ export default function Cart() {
                 </div>
 
                 {/* PRICE + DELETE */}
-                <div className="flex sm:flex-col items-center justify-between sm:items-end">
+                <div className="flex sm:flex-col items-center justify-between sm:items-end w-full sm:w-auto">
 
                   <p className="font-bold text-lg">
                     ₹{item.price * item.quantity}
@@ -413,7 +420,7 @@ export default function Cart() {
 
           {/* SUMMARY */}
           <div className="lg:col-span-1">
-            <div className="bg-white p-5 md:p-8 rounded-2xl shadow-md sticky top-24">
+            <div className="bg-white p-5 md:p-8 rounded-2xl shadow-md lg:sticky lg:top-24">
 
               <h2 className="text-xl md:text-2xl font-bold mb-5">
                 Order Summary

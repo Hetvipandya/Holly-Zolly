@@ -200,11 +200,11 @@ export default function ProductCard({ product }) {
     navigate(`/product/${product.id}`);
   };
 
-  // 🔥 Common Toast Style
+  // 🔥 Common Toast Style (default for cart)
   const toastStyle = {
     position: "bottom-right",
     style: {
-      background: "#4B5563", // gray
+      background: "#4B5563",
       color: "#fff",
       borderRadius: "10px",
     },
@@ -217,7 +217,14 @@ export default function ProductCard({ product }) {
     const user = JSON.parse(localStorage.getItem("currentUser"));
 
     if (!user) {
-      toast.error("Please login first ❗", toastStyle);
+      toast.error("Please login first ❗", {
+        position: "top-center",
+        style: {
+          background: "#4B5563",
+          color: "#fff",
+          borderRadius: "10px",
+        },
+      });
       navigate("/login");
       return;
     }
@@ -235,8 +242,13 @@ export default function ProductCard({ product }) {
 
     if (exists) {
       toast("Already in wishlist ❤️", {
-        ...toastStyle,
+        position: "top-center",
         icon: "ℹ️",
+        style: {
+          background: "#4B5563",
+          color: "#fff",
+          borderRadius: "10px",
+        },
       });
       return;
     }
@@ -249,7 +261,14 @@ export default function ProductCard({ product }) {
     localStorage.setItem("wishlistItems", JSON.stringify(wishlist));
     window.dispatchEvent(new Event("cartUpdated"));
 
-    toast.success("Added to wishlist ❤️", toastStyle);
+    toast.success("Added to wishlist ❤️", {
+      position: "top-center",
+      style: {
+        background: "#4B5563",
+        color: "#fff",
+        borderRadius: "10px",
+      },
+    });
   };
 
   // 🛒 ADD TO CART
@@ -333,16 +352,6 @@ export default function ProductCard({ product }) {
           alt={product.name}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
-
-        {/* HOVER ACTION */}
-        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-          <button
-            onClick={addToWishlist}
-            className="bg-white p-3 rounded-full hover:bg-orange-600 hover:text-white transition"
-          >
-            <FaHeart />
-          </button>
-        </div>
       </div>
 
       {/* CONTENT */}
@@ -362,7 +371,7 @@ export default function ProductCard({ product }) {
           Authentic Vastu Product
         </p>
 
-        {/* 💰 PRICE */}
+        {/* 💰 PRICE + ACTIONS */}
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
 
@@ -377,12 +386,26 @@ export default function ProductCard({ product }) {
             </span>
           </div>
 
-          <button
-            onClick={addToCart}
-            className="bg-black text-white p-3 rounded-xl hover:bg-orange-600 transition"
-          >
-            <FaShoppingCart />
-          </button>
+          {/* 👉 ACTION BUTTONS */}
+          <div className="flex items-center gap-2">
+
+            {/* ❤️ Wishlist */}
+            <button
+              onClick={addToWishlist}
+              className="bg-gray-100 text-black p-3 rounded-xl hover:bg-orange-600 hover:text-white transition"
+            >
+              <FaHeart />
+            </button>
+
+            {/* 🛒 Cart */}
+            <button
+              onClick={addToCart}
+              className="bg-black text-white p-3 rounded-xl hover:bg-orange-600 transition"
+            >
+              <FaShoppingCart />
+            </button>
+
+          </div>
         </div>
       </div>
     </div>

@@ -7,11 +7,11 @@ export default function Wishlist() {
   const [wishlistItems, setWishlistItems] = useState([]);
   const navigate = useNavigate();
 
-  // 🔥 Common Toast Style
-  const toastStyle = {
-    position: "bottom-right",
+  // 🔥 Top Center Toast Style
+  const topToast = {
+    position: "top-center",
     style: {
-      background: "#4B5563", // gray
+      background: "#4B5563",
       color: "#fff",
       borderRadius: "10px",
     },
@@ -23,15 +23,18 @@ export default function Wishlist() {
     setWishlistItems(storedWishlist);
   }, []);
 
+  // ❌ REMOVE FROM WISHLIST
   const removeFromWishlist = (id) => {
     const updatedWishlist = wishlistItems.filter((item) => item.id !== id);
     setWishlistItems(updatedWishlist);
     localStorage.setItem("wishlistItems", JSON.stringify(updatedWishlist));
     window.dispatchEvent(new Event("wishlistUpdated"));
 
-    toast.success("Removed from wishlist ❌", toastStyle);
+    // ✅ TOP CENTER
+    toast.success("Removed from wishlist ❌", topToast);
   };
 
+  // 🛒 MOVE TO CART
   const moveToCart = (product) => {
     const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
     const sizeToSend =
@@ -66,7 +69,8 @@ export default function Wishlist() {
     localStorage.setItem("wishlistItems", JSON.stringify(updatedWishlist));
     window.dispatchEvent(new Event("cartUpdated"));
 
-    toast.success("Moved to cart 🛒", toastStyle);
+    // ✅ TOP CENTER
+    toast.success("Moved to cart 🛒", topToast);
 
     navigate("/cart");
   };
