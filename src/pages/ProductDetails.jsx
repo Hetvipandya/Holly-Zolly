@@ -8,13 +8,14 @@ import toast from "react-hot-toast";
 export default function ProductDetails() {
   const { id } = useParams();
 
-  const product = products.find((p) => p.id === Number(id));
+  const [products, setProducts] = useState([]);
+  const [product, setProduct] = useState(null);
 
   const [activeImage, setActiveImage] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
   const [isWishlisted, setIsWishlisted] = useState(false);
 
-  // 🔥 Toast Style (same for both)
+  // 🔥 Toast Style
   const toastStyle = {
     position: "bottom-right",
     style: {
@@ -24,12 +25,26 @@ export default function ProductDetails() {
     },
   };
 
+  // ✅ Load Products
+  useEffect(() => {
+    const data = getProducts(); // if async → use await
+    setProducts(data);
+  }, []);
+
+  // ✅ Find Product
+  useEffect(() => {
+    if (products.length > 0) {
+      const found = products.find((p) => p.id === Number(id));
+      setProduct(found);
+    }
+  }, [products, id]);
+
+  // ✅ Setup Product State
   useEffect(() => {
     if (product) {
       setActiveImage(product.images?.[0] || "");
       setSelectedSize(product.sizes?.[0] || "");
 
-      // check wishlist
       const wishlist =
         JSON.parse(localStorage.getItem("wishlistItems")) || [];
 
@@ -44,7 +59,7 @@ export default function ProductDetails() {
   }, [product]);
 
   if (!product) {
-    return <div className="p-10 text-center">Product Not Found</div>;
+    return <div className="p-10 text-center">Loading...</div>;
   }
 
   // 🛒 ADD TO CART
@@ -76,7 +91,7 @@ export default function ProductDetails() {
     toast.success("Added to cart 🛒", toastStyle);
   };
 
-  // ❤️ WISHLIST FUNCTION
+  // ❤️ TOGGLE WISHLIST
   const toggleWishlist = () => {
     const wishlist =
       JSON.parse(localStorage.getItem("wishlistItems")) || [];
@@ -88,12 +103,10 @@ export default function ProductDetails() {
     );
 
     if (index > -1) {
-      // remove
       wishlist.splice(index, 1);
       setIsWishlisted(false);
       toast.success("Removed from wishlist ❌", toastStyle);
     } else {
-      // add
       wishlist.push({
         id: product.id,
         name: product.name,
@@ -113,16 +126,17 @@ export default function ProductDetails() {
     <section className="py-10">
       <div className="max-w-6xl mx-auto px-6">
 
-       <Link
-  to="/shop"
-  className="inline-flex items-center gap-2 mb-6 text-gray-600 font-medium hover:text-black transition-all duration-300 group"
->
-  <FiArrowLeft className="transition-transform duration-300 group-hover:-translate-x-1" />
-  <span className="relative">
-    Back
-    <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-black transition-all duration-300 group-hover:w-full"></span>
-  </span>
-</Link>
+        {/* 🔙 BACK BUTTON */}
+        <Link
+          to="/shop"
+          className="inline-flex items-center gap-2 mb-6 text-gray-600 font-medium hover:text-black transition-all duration-300 group"
+        >
+          <FiArrowLeft className="transition-transform duration-300 group-hover:-translate-x-1" />
+          <span className="relative">
+            Back
+            <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-black transition-all duration-300 group-hover:w-full"></span>
+          </span>
+        </Link>
 
         <div className="grid md:grid-cols-2 gap-10">
 
@@ -148,9 +162,7 @@ export default function ProductDetails() {
 
           {/* DETAILS */}
           <div>
-            <h1 className="text-3xl font-bold">
-              {product.name}
-            </h1>
+            <h1 className="text-3xl font-bold">{product.name}</h1>
 
             {/* PRICE */}
             <div className="mt-3 flex items-center gap-3">
@@ -159,19 +171,19 @@ export default function ProductDetails() {
               </p>
 
               {product.originalPrice && (
-                <p className="text-gray-400 text-lg line-through">
-                  ₹{product.originalPrice}
-                </p>
-              )}
-
-              {product.originalPrice && (
-                <span className="bg-green-100 text-green-600 px-2 py-1 text-xs rounded">
-                  {Math.round(
-                    ((product.originalPrice - product.price) /
-                      product.originalPrice) *
-                      100
-                  )}% OFF
-                </span>
+                <>
+                  <p className="text-gray-400 text-lg line-through">
+                    ₹{product.originalPrice}
+                  </p>
+                  <span className="bg-green-100 text-green-600 px-2 py-1 text-xs rounded">
+                    {Math.round(
+                      ((product.originalPrice - product.price) /
+                        product.originalPrice) *
+                        100
+                    )}
+                    % OFF
+                  </span>
+                </>
               )}
             </div>
 
@@ -210,7 +222,6 @@ export default function ProductDetails() {
                 Add to Cart
               </button>
 
-              {/* ❤️ WISHLIST BUTTON */}
               <button
                 onClick={toggleWishlist}
                 className={`border px-4 py-2 rounded ${
