@@ -177,7 +177,7 @@
   //   );
   // }
 
-  import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getProducts } from "../data/products";
 import ProductCard from "../components/ProductCard";
 import ContactCTA from "../components/ContactCTA";
@@ -197,26 +197,26 @@ export default function Shop() {
   const categoryFromUrl = searchParams.get("category");
 
   // ✅ FETCH PRODUCTS FROM SANITY
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const data = await getProducts();
-        console.log("Products:", data);
-        setProducts(data);
-      } catch (err) {
-        console.error("Error:", err);
-      } finally {
-        setLoading(false);
-      }
+  const fetchData = async () => {
+    try {
+      const data = await getProducts();
+      console.log("Products:", data);
+      setProducts(data);
+    } catch (err) {
+      console.error("Error:", err);
+    } finally {
+      setLoading(false);
     }
+  };
 
+  useEffect(() => {
     fetchData();
   }, []);
 
   // ✅ CATEGORY FROM URL
   useEffect(() => {
     if (categoryFromUrl && categoryFromUrl !== "all") {
-      setCategory(categoryFromUrl);
+      setCategory(categoryFromUrl.toLowerCase());
     } else {
       setCategory("");
     }
@@ -225,20 +225,29 @@ export default function Shop() {
   // ✅ FILTER + SORT
   const filteredProducts = products
     .filter((product) => {
-      if (category && product.category?.toLowerCase() !== category.toLowerCase()) return false;
+      // 🔥 CATEGORY FIX (slug based)
+      if (category && product.category !== category) return false;
+
+      // size (optional if you add later)
       if (size && !product.sizes?.includes(size)) return false;
+
+      // rating
       if (rating && product.rating < Number(rating)) return false;
+
       return true;
     })
     .sort((a, b) => {
       if (sort === "low") return a.price - b.price;
       if (sort === "high") return b.price - a.price;
+
+      // 🔥 DATE FIX (proper sorting)
       if (sort === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
       if (sort === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+
       return 0;
     });
 
-  // ✅ DYNAMIC CATEGORY LIST FROM DATA
+  // ✅ DYNAMIC CATEGORY LIST (slug based)
   const categoriesList = [
     ...new Set(products.map((p) => p.category).filter(Boolean)),
   ];
@@ -289,9 +298,9 @@ export default function Shop() {
                 {categoriesList.map((cat) => (
                   <button
                     key={cat}
-                    onClick={() => setCategory(cat.toLowerCase())}
+                    onClick={() => setCategory(cat)}
                     className={`px-4 py-2 rounded-xl text-sm border ${
-                      category === cat?.toLowerCase()
+                      category === cat
                         ? "bg-orange-600 text-white"
                         : "bg-white text-gray-600"
                     }`}

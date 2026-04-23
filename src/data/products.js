@@ -205,29 +205,24 @@ export async function getProducts() {
     price,
     description,
     "image": image.asset->url, 
-    "category": category->title,
     "categorySlug": category->slug.current,
-    _createdAt
+    _createdAt,
+    rating
   }`;
 
   const data = await client.fetch(query);
 
   return data.map((item, index) => ({
-    id: item._id,
+    _id: item._id,
     name: item.title,
     price: item.price,
-
-    // 👉 fallback values (correct che)
     originalPrice: item.price + 200,
     stockQty: 5,
-    rating: 4,
+    rating: item.rating || 0,
     isBestSeller: false,
     isSale: false,
-
-    category: item.category || "General",
-    categorySlug: item.categorySlug || "general",
-    createdAt: item._createdAt?.split("T")[0],
-
+    category: item.categorySlug || "general",
+    createdAt: item._createdAt,
     stock: true,
     sku: `SKU-${index + 1}`,
     description: item.description,
