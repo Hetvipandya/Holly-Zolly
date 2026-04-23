@@ -5,13 +5,21 @@ import { getProducts } from "../data/products";
 
 export default function SearchModal({ onClose }) {
   const [query, setQuery] = useState("");
+  const [products, setProducts] = useState([]);
 
-  // Lock body scroll
+  // 🔒 Lock body scroll
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => (document.body.style.overflow = "auto");
   }, []);
 
+  // ✅ Load products
+  useEffect(() => {
+    const data = getProducts(); // if async → use await
+    setProducts(data);
+  }, []);
+
+  // ✅ Filter products
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(query.toLowerCase())
   );
@@ -65,7 +73,7 @@ export default function SearchModal({ onClose }) {
                   className="border rounded-lg overflow-hidden hover:shadow transition"
                 >
                   <img
-                    src={product.images[0]}
+                    src={product.images?.[0]}
                     alt={product.name}
                     className="h-40 w-full object-cover"
                   />
@@ -83,6 +91,7 @@ export default function SearchModal({ onClose }) {
             </div>
           )}
         </div>
+
       </div>
     </div>
   );
