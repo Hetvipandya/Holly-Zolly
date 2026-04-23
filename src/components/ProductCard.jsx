@@ -10,6 +10,16 @@
 //     navigate(`/product/${product.id}`);
 //   };
 
+//   // 🔥 Common Toast Style (default for cart)
+//   const toastStyle = {
+//     position: "bottom-right",
+//     style: {
+//       background: "#4B5563",
+//       color: "#fff",
+//       borderRadius: "10px",
+//     },
+//   };
+
 //   // ❤️ ADD TO WISHLIST
 //   const addToWishlist = (e) => {
 //     e.stopPropagation();
@@ -17,7 +27,14 @@
 //     const user = JSON.parse(localStorage.getItem("currentUser"));
 
 //     if (!user) {
-//       toast.error("Please login first");
+//       toast.error("Please login first ❗", {
+//         position: "top-center",
+//         style: {
+//           background: "#4B5563",
+//           color: "#fff",
+//           borderRadius: "10px",
+//         },
+//       });
 //       navigate("/login");
 //       return;
 //     }
@@ -30,11 +47,19 @@
 //     const exists = wishlist.some(
 //       (item) =>
 //         item.id === product.id &&
-//         item.selectedSize === sizeToSend 
+//         item.selectedSize === sizeToSend
 //     );
 
 //     if (exists) {
-//       toast("Already in wishlist ❤️", { icon: "ℹ️" });
+//       toast("Already in wishlist ❤️", {
+//         position: "top-center",
+//         icon: "ℹ️",
+//         style: {
+//           background: "#4B5563",
+//           color: "#fff",
+//           borderRadius: "10px",
+//         },
+//       });
 //       return;
 //     }
 
@@ -46,7 +71,14 @@
 //     localStorage.setItem("wishlistItems", JSON.stringify(wishlist));
 //     window.dispatchEvent(new Event("cartUpdated"));
 
-//     toast.success("Added to wishlist ❤️");
+//     toast.success("Added to wishlist ❤️", {
+//       position: "top-center",
+//       style: {
+//         background: "#4B5563",
+//         color: "#fff",
+//         borderRadius: "10px",
+//       },
+//     });
 //   };
 
 //   // 🛒 ADD TO CART
@@ -56,7 +88,7 @@
 //     const user = JSON.parse(localStorage.getItem("currentUser"));
 
 //     if (!user) {
-//       toast.error("Please login first");
+//       toast.error("Please login first ❗", toastStyle);
 //       navigate("/login");
 //       return;
 //     }
@@ -88,7 +120,7 @@
 //     localStorage.setItem("cartItems", JSON.stringify(cart));
 //     window.dispatchEvent(new Event("cartUpdated"));
 
-//     toast.success("Added to cart 🛒");
+//     toast.success("Added to cart 🛒", toastStyle);
 //   };
 
 //   // 🔥 Discount %
@@ -130,16 +162,6 @@
 //           alt={product.name}
 //           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
 //         />
-
-//         {/* HOVER ACTION */}
-//         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-//           <button
-//             onClick={addToWishlist}
-//             className="bg-white p-3 rounded-full hover:bg-orange-600 hover:text-white transition"
-//           >
-//             <FaHeart />
-//           </button>
-//         </div>
 //       </div>
 
 //       {/* CONTENT */}
@@ -154,34 +176,46 @@
 //             <span className="text-xs font-bold">{product.rating}</span>
 //           </div>
 //         </div>
-
+ 
 //         <p className="text-gray-400 text-xs mb-4">
 //           Authentic Vastu Product
 //         </p>
 
-//         {/* 💰 PRICE SECTION */}
+//         {/* 💰 PRICE + ACTIONS */}
 //         <div className="flex justify-between items-center">
 //           <div className="flex items-center gap-2">
-            
-//             {/* Original Price */}
+
 //             {product.originalPrice > product.price && (
 //               <span className="text-gray-400 line-through text-sm">
 //                 ₹{product.originalPrice}
 //               </span>
 //             )}
 
-//             {/* Final Price */}
 //             <span className="text-xl font-bold text-black">
 //               ₹{product.price}
 //             </span>
 //           </div>
 
-//           <button
-//             onClick={addToCart}
-//             className="bg-black text-white p-3 rounded-xl hover:bg-orange-600 transition"
-//           >
-//             <FaShoppingCart />
-//           </button>
+//           {/* 👉 ACTION BUTTONS */}
+//           <div className="flex items-center gap-2">
+
+//             {/* ❤️ Wishlist */}
+//             <button
+//               onClick={addToWishlist}
+//               className="bg-gray-100 text-black p-3 rounded-xl hover:bg-orange-600 hover:text-white transition"
+//             >
+//               <FaHeart />
+//             </button>
+
+//             {/* 🛒 Cart */}
+//             <button
+//               onClick={addToCart}
+//               className="bg-black text-white p-3 rounded-xl hover:bg-orange-600 transition"
+//             >
+//               <FaShoppingCart />
+//             </button>
+
+//           </div>
 //         </div>
 //       </div>
 //     </div>
@@ -200,7 +234,7 @@ export default function ProductCard({ product }) {
     navigate(`/product/${product.id}`);
   };
 
-  // 🔥 Common Toast Style (default for cart)
+  // 🔥 Common Toast Style
   const toastStyle = {
     position: "bottom-right",
     style: {
@@ -301,7 +335,7 @@ export default function ProductCard({ product }) {
         id: product.id,
         name: product.name,
         price: product.price,
-        image: product.images[0],
+        image: product.images?.[0] || "/placeholder.png", // 🔥 FIX
         quantity: 1,
         selectedSize: sizeToSend,
       });
@@ -348,7 +382,7 @@ export default function ProductCard({ product }) {
 
         {/* IMAGE */}
         <img
-          src={product.images[0]}
+          src={product.images?.[0] || "/placeholder.png"}  // 🔥 FIX
           alt={product.name}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
@@ -363,7 +397,9 @@ export default function ProductCard({ product }) {
 
           <div className="flex items-center gap-1 bg-orange-50 px-2 py-1 rounded">
             <FaStar size={10} />
-            <span className="text-xs font-bold">{product.rating}</span>
+            <span className="text-xs font-bold">
+              {product.rating || 4} {/* 🔥 fallback */}
+            </span>
           </div>
         </div>
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FiX, FiSearch } from "react-icons/fi";
-import products from "../data/products";
+import { getProducts } from "../data/products";
 
 export default function SearchModal({ onClose }) {
   const [query, setQuery] = useState("");

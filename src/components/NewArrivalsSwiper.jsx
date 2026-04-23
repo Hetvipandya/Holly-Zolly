@@ -119,8 +119,9 @@
 //   );
 // }
 
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import products from "../data/products";
+import { getProducts } from "../data/products";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 
@@ -129,8 +130,19 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 
 export default function NewArrivalsSwiper() {
+  const [products, setProducts] = useState([]); // ✅ FIX
 
-  const newArrivals = products
+  // ✅ Fetch products
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getProducts();
+      setProducts(data);
+    };
+    fetchData();
+  }, []);
+
+  // ✅ Safe sorting
+  const newArrivals = [...products] // copy to avoid mutation
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, 8);
 
@@ -162,26 +174,14 @@ export default function NewArrivalsSwiper() {
             navigation
             pagination={{
               clickable: true,
-              el: ".custom-pagination", // 👈 custom pagination container
+              el: ".custom-pagination",
             }}
             loop
             className="custom-swiper"
             breakpoints={{
-              0: {
-                slidesPerView: 1.1,
-                spaceBetween: 10,
-                navigation: false,
-              },
-              640: {
-                slidesPerView: 2,
-                spaceBetween: 15,
-                navigation: false,
-              },
-              1024: {
-                slidesPerView: 4,
-                spaceBetween: 25,
-                navigation: true,
-              },
+              0: { slidesPerView: 1.1, spaceBetween: 10, navigation: false },
+              640: { slidesPerView: 2, spaceBetween: 15, navigation: false },
+              1024: { slidesPerView: 4, spaceBetween: 25, navigation: true },
             }}
           >
             {newArrivals.map((item) => (
@@ -209,19 +209,16 @@ export default function NewArrivalsSwiper() {
             ))}
           </Swiper>
 
-          {/* ✅ CUSTOM DOTS BELOW */}
+          {/* DOTS */}
           <div className="custom-pagination mt-6 flex justify-center"></div>
         </div>
 
-        {/* ================= CUSTOM CSS ================= */}
         <style>{`
-          /* ARROWS */
           .custom-swiper .swiper-button-next,
           .custom-swiper .swiper-button-prev {
             color: #f97316 !important;
           }
 
-          /* DOTS */
           .custom-pagination .swiper-pagination-bullet {
             background: #f97316 !important;
             opacity: 0.4;
@@ -233,7 +230,6 @@ export default function NewArrivalsSwiper() {
             opacity: 1;
           }
 
-          /* MOBILE FIX */
           @media (max-width: 640px) {
             .custom-swiper .swiper-button-next,
             .custom-swiper .swiper-button-prev {

@@ -1,6 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import products from "../data/products";
+import { getProducts } from "../data/products";
 import { FaHeart } from "react-icons/fa";
 import { FiArrowLeft } from "react-icons/fi";
 import toast from "react-hot-toast";
