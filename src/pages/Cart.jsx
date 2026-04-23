@@ -229,70 +229,74 @@ export default function Cart() {
   const navigate = useNavigate();
   const [cartItems, setCartItems] = useState([]);
 
-  // ✅ RESPONSIVE TOAST
-  const getToastStyle = () => {
-    const isMobile = window.innerWidth < 768;
-
-    return {
-      position: isMobile ? "top-center" : "bottom-right",
-      style: {
-        background: "#4B5563",
-        color: "#fff",
-        borderRadius: "10px",
-        marginTop: isMobile ? "60px" : "0px",
-        marginBottom: !isMobile ? "20px" : "0px",
-      },
-    };
+  const toastStyle = {
+    position: "top-center",
+    style: {
+      background: "#374151",
+      color: "#fff",
+      borderRadius: "10px",
+    },
   };
 
+  // LOAD CART
   useEffect(() => {
-    const storedCart = JSON.parse(localStorage.getItem("cartItems")) || [];
-    setCartItems(storedCart);
+    const stored = JSON.parse(localStorage.getItem("cartItems")) || [];
+    setCartItems(stored);
   }, []);
 
+  // SAVE CART
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
     window.dispatchEvent(new Event("cartUpdated"));
   }, [cartItems]);
 
+  // ➕ INCREASE
   const increaseQty = (id) => {
     setCartItems((prev) =>
       prev.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Number(item.quantity) + 1 }
+        item._id === id
+          ? { ...item, quantity: item.quantity + 1 }
           : item
       )
     );
   };
 
+  // ➖ DECREASE
   const decreaseQty = (id) => {
     setCartItems((prev) =>
       prev.map((item) =>
-        item.id === id
+        item._id === id
           ? {
               ...item,
-              quantity: Math.max(1, Number(item.quantity) - 1),
+              quantity: Math.max(1, item.quantity - 1),
             }
           : item
       )
     );
   };
 
+  // ❌ DELETE FIXED (ONLY ONE ITEM)
   const removeItem = (id) => {
-    setCartItems((prev) => prev.filter((item) => item.id !== id));
-    toast.success("Item removed from cart", getToastStyle());
+    const updated = cartItems.filter((item) => item._id !== id);
+
+    setCartItems(updated);
+    localStorage.setItem("cartItems", JSON.stringify(updated));
+
+    toast.success("Item removed ❌", toastStyle);
   };
 
+  // TOTAL
   const cartTotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
 
+  // CHECKOUT
   const proceedToCheckout = () => {
     const user = JSON.parse(localStorage.getItem("currentUser"));
 
     if (!user) {
-      toast.error("Please login first", getToastStyle());
+      toast.error("Please login first", toastStyle);
       navigate("/login");
       return;
     }
@@ -300,49 +304,48 @@ export default function Cart() {
     navigate("/checkout");
   };
 
+  // EMPTY
   if (cartItems.length === 0) {
     return (
-      <div className="py-24 text-center min-h-[60vh] flex flex-col items-center justify-center px-4">
-        <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-5 text-gray-300">
-          <FaShoppingBag size={32} />
-        </div>
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
+        <FaShoppingBag className="text-gray-300 text-5xl mb-4" />
 
-        <h2 className="text-2xl md:text-3xl font-bold mb-3">
-          Your Cart is <span className="text-orange-600 italic">Empty</span>
+        <h2 className="text-2xl font-bold">
+          Your Cart is <span className="text-orange-600">Empty</span>
         </h2>
 
-        <p className="text-gray-500 mb-6 text-sm md:text-base max-w-xs">
-          Add items to start shopping
+        <p className="text-gray-500 mt-2">
+          Add products to continue shopping
         </p>
 
         <Link
           to="/shop"
-          className="bg-black text-white px-6 py-3 rounded-xl text-sm font-semibold"
+          className="mt-6 bg-black text-white px-6 py-3 rounded-xl"
         >
-          Explore Shop <FaArrowRight className="inline ml-2" />
+          Explore Shop
         </Link>
       </div>
     );
   }
 
   return (
-    <section className="py-10 md:py-16 bg-[#FCFBFA] min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+    <section className="py-10 bg-[#FCFBFA] min-h-screen">
+      <div className="max-w-7xl mx-auto px-4">
 
         {/* TITLE */}
-        <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-6">
-          Shopping <span className="text-orange-600 italic">Cart</span>
+        <h1 className="text-3xl md:text-5xl font-bold mb-8">
+          Shopping <span className="text-orange-600">Cart</span>
         </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-          {/* CART ITEMS */}
-          <div className="lg:col-span-2 space-y-4 md:space-y-6">
+          {/* ITEMS */}
+          <div className="lg:col-span-2 space-y-5">
 
             {cartItems.map((item) => (
               <div
-                key={item.id}
-                className="bg-white rounded-2xl p-4 md:p-6 border flex flex-col sm:flex-row gap-4 shadow-sm"
+                key={item._id}
+                className="bg-white p-4 md:p-6 rounded-2xl shadow-sm flex flex-col sm:flex-row gap-4"
               >
 
                 {/* IMAGE */}
@@ -352,107 +355,98 @@ export default function Cart() {
                   alt={item.name}
                 />
 
-                {/* DETAILS */}
+                {/* INFO */}
                 <div className="flex-1">
 
-                  <h3 className="font-bold text-base md:text-lg">
+                  <h3 className="font-bold text-lg">
                     {item.name}
                   </h3>
 
-                  <p className="text-xs text-gray-500 mt-1">
-                    Size:{" "}
-                    <span className="text-orange-600 font-semibold">
-                      {item.selectedSize}
-                    </span>
+                  <p className="text-sm text-gray-500">
+                    Size: {item.selectedSize}
                   </p>
 
-                  <p className="text-sm font-bold mt-1">
+                  <p className="font-bold mt-1">
                     ₹{item.price}
                   </p>
 
                   {/* QTY */}
                   <div className="flex items-center mt-3 border rounded-lg w-fit">
                     <button
-                      onClick={() => decreaseQty(item.id)}
+                      onClick={() => decreaseQty(item._id)}
                       className="p-2"
                     >
                       <FaMinus size={10} />
                     </button>
 
-                    <span className="px-3 text-sm font-bold">
+                    <span className="px-3 font-bold">
                       {item.quantity}
                     </span>
 
                     <button
-                      onClick={() => increaseQty(item.id)}
+                      onClick={() => increaseQty(item._id)}
                       className="p-2"
                     >
                       <FaPlus size={10} />
                     </button>
                   </div>
+
                 </div>
 
                 {/* PRICE + DELETE */}
-                <div className="flex sm:flex-col items-center justify-between sm:items-end w-full sm:w-auto">
+                <div className="flex sm:flex-col justify-between items-center sm:items-end">
 
                   <p className="font-bold text-lg">
                     ₹{item.price * item.quantity}
                   </p>
 
                   <button
-                    onClick={() => removeItem(item.id)}
+                    onClick={() => removeItem(item._id)}
                     className="text-red-500 mt-2"
                   >
                     <FaTrash />
                   </button>
 
                 </div>
+
               </div>
             ))}
 
-            <Link
-              to="/shop"
-              className="text-sm text-gray-500 hover:text-orange-600"
-            >
-              ← Continue Shopping
-            </Link>
           </div>
 
           {/* SUMMARY */}
-          <div className="lg:col-span-1">
-            <div className="bg-white p-5 md:p-8 rounded-2xl shadow-md lg:sticky lg:top-24">
+          <div className="bg-white p-6 rounded-2xl shadow-md h-fit">
 
-              <h2 className="text-xl md:text-2xl font-bold mb-5">
-                Order Summary
-              </h2>
+            <h2 className="text-2xl font-bold mb-5">
+              Order Summary
+            </h2>
 
-              <div className="space-y-3 text-sm">
+            <div className="space-y-3">
 
-                <div className="flex justify-between">
-                  <span>Subtotal</span>
-                  <span className="font-bold">₹{cartTotal}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span>Shipping</span>
-                  <span className="text-green-600 font-bold">Free</span>
-                </div>
-
-                <div className="border-t pt-3 flex justify-between">
-                  <span className="font-bold">Total</span>
-                  <span className="text-xl font-bold">₹{cartTotal}</span>
-                </div>
-
+              <div className="flex justify-between">
+                <span>Subtotal</span>
+                <span className="font-bold">₹{cartTotal}</span>
               </div>
 
-              <button
-                onClick={proceedToCheckout}
-                className="w-full mt-6 bg-black text-white py-3 rounded-xl font-bold"
-              >
-                Checkout <FaArrowRight className="inline ml-2" />
-              </button>
+              <div className="flex justify-between">
+                <span>Shipping</span>
+                <span className="text-green-600">Free</span>
+              </div>
+
+              <div className="border-t pt-3 flex justify-between font-bold">
+                <span>Total</span>
+                <span>₹{cartTotal}</span>
+              </div>
 
             </div>
+
+            <button
+              onClick={proceedToCheckout}
+              className="w-full mt-6 bg-black text-white py-3 rounded-xl"
+            >
+              Checkout <FaArrowRight className="inline ml-2" />
+            </button>
+
           </div>
 
         </div>

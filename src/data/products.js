@@ -205,7 +205,8 @@ export async function getProducts() {
     price,
     description,
     "image": image.asset->url, 
-    "categorySlug": category->slug.current,
+    "category": category->title,
+    "categorySlug": category->slug.current,  // ✅ FIX (comma added)
     _createdAt,
     rating
   }`;
@@ -221,7 +222,10 @@ export async function getProducts() {
     rating: item.rating || 0,
     isBestSeller: false,
     isSale: false,
-    category: item.categorySlug || "general",
+
+    // ✅ IMPORTANT (use title for filtering)
+    category: item.category || "general",
+
     createdAt: item._createdAt,
     stock: true,
     sku: `SKU-${index + 1}`,
