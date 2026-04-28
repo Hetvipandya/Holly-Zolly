@@ -301,7 +301,7 @@ export default function Profile() {
       JSON.parse(localStorage.getItem(`addresses_${user.email}`)) || [];
 
     setAddresses(savedAddresses);
-  }, []);
+  }, [navigate]);
 
   const openAddForm = () => {
     setEditAddress(null);
@@ -309,7 +309,7 @@ export default function Profile() {
   };
 
   const openEditForm = (address) => {
-    setEditAddress(address);
+    setEditAddress(address); 
     setShowForm(true);
   };
 
@@ -355,6 +355,10 @@ export default function Profile() {
       navigate("/login");
     }
   };
+
+  if (profile === null) {
+    return null;
+  }
 
   return (
     <section className="bg-[#FCFBFA] py-16 min-h-screen">
