@@ -14,7 +14,7 @@ const slides = [
       "https://i.pinimg.com/1200x/78/a8/17/78a817db87c881fbf32ae0a8c31f06be.jpg",
   },
   {
-    title: "Daily Horoscope & Predictions",
+    title: "Daily Horoscope & Predictions", 
     subtitle: "Know What Stars Say",
     description:
       "Stay ahead with daily, weekly, and monthly horoscope updates. Understand love, career, and health predictions based on your zodiac.",
@@ -80,9 +80,9 @@ export default function AstrologyHero() {
         >
 
           {/* TITLE */}
-          <h1 className="text-2xl sm:text-3xl md:text-6xl font-bold mb-4 leading-tight">
-            {slides[current].title}
-          </h1>
+         <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 leading-tight">
+  {slides[current].title}
+</h1>
 
           {/* SUBTITLE */}
           <h3 className="text-sm sm:text-base md:text-xl text-white/70 font-semibold mb-3 uppercase">
@@ -132,7 +132,22 @@ export default function AstrologyHero() {
       </button>
 
       {/* DOTS */}
-      <div className="absolute bottom-6 w-full flex justify-center gap-3">
+<div className="absolute bottom-6 w-full flex justify-center gap-3 z-20">
+  {slides.map((_, index) => (
+    <button
+      key={index}
+      onClick={() => setCurrent(index)}
+      className="p-2" // 👈 touch area (important for mobile)
+    >
+      <div
+        className={`h-1.5 w-1.5 md:h-2 md:w-2 rounded-full transition-all duration-300 ${
+          current === index ? "bg-white scale-125" : "bg-white/40"
+        }`}
+      />
+    </button>
+  ))}
+</div>
+      {/* <div className="absolute bottom-6 w-full flex justify-center gap-3">
         {slides.map((_, index) => (
           <button
             key={index}
@@ -142,7 +157,7 @@ export default function AstrologyHero() {
             }`}
           />
         ))}
-      </div>
+      </div> */}
 
     </section>
   );

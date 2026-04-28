@@ -5,7 +5,7 @@ import {
   FaEye,
   FaEyeSlash,
   FaEnvelope,
-  FaLock,
+  FaLock, 
   FaArrowRight,
 } from "react-icons/fa";
 

@@ -18,18 +18,33 @@ export default function Register() {
   const [form, setForm] = useState({
     name: "",
     email: "",
+     phone: "",
     password: "",
     confirmPassword: "",
   });
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  // ✅ PHONE FIELD CONTROL
+  if (name === "phone") {
+    // Allow only numbers & max 10 digits
+    const cleaned = value.replace(/\D/g, "").slice(0, 10);
+    setForm({ ...form, phone: cleaned });
+    return;
+  }
+
+  setForm({ ...form, [name]: value });
+};
 
   // EMAIL CHECK
   const isValidEmail = (email) => {
     return /\S+@\S+\.\S+/.test(email);
   };
+
+  const isValidPhone = (phone) => {
+  return /^[6-9]\d{9}$/.test(phone); // Indian 10-digit format
+};
 
   // REGISTER
   const handleRegister = (e) => {
@@ -39,6 +54,18 @@ export default function Register() {
     const email = form.email.trim();
     const password = form.password;
     const confirmPassword = form.confirmPassword;
+
+    const phone = form.phone.trim();
+
+if (!name || !email || !phone || !password || !confirmPassword) {
+  toast.error("⚠️ All fields are required");
+  return;
+}
+
+if (!isValidPhone(phone)) {
+  toast.error("⚠️ Invalid phone number");
+  return;
+}
 
     // ❌ VALIDATIONS
     if (!name || !email || !password || !confirmPassword) {
@@ -75,6 +102,7 @@ export default function Register() {
       id: Date.now(),
       name,
       email,
+       phone, 
       password,
     };
 
@@ -135,11 +163,11 @@ export default function Register() {
                 <FaUser size={10} /> Full Name
               </label>
               <input
-                type="text"
+                type="text" 
                 name="name"
                 value={form.name}
                 onChange={handleChange}
-                placeholder="Pandya Hetvi"
+                placeholder="John Doe"
                 className="w-full mt-2 px-4 py-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
@@ -159,46 +187,65 @@ export default function Register() {
               />
             </div>
 
+            {/* PHONE */}
+<div>
+  <label className="text-xs text-gray-400 flex items-center gap-2">
+    📞 Phone Number
+  </label>
+<input
+  type="tel"
+  name="phone"
+  value={form.phone}
+  onChange={handleChange}
+  placeholder="**********"
+  maxLength={10} // extra safety
+  className="w-full mt-2 px-4 py-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-orange-500"
+/>
+</div>
+
             {/* PASSWORD */}
-            <div className="grid md:grid-cols-2 gap-4">
+         {/* PASSWORD */}
+<div className="space-y-4">
 
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  value={form.password}
-                  onChange={handleChange}
-                  placeholder="Password"
-                  className="w-full px-4 py-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-orange-500"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-3 text-gray-400"
-                >
-                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                </button>
-              </div>
+  {/* PASSWORD */}
+  <div className="relative">
+    <input
+      type={showPassword ? "text" : "password"}
+      name="password"
+      value={form.password}
+      onChange={handleChange}
+      placeholder="Password"
+      className="w-full px-4 py-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-orange-500"
+    />
+    <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      className="absolute right-3 top-3 text-gray-400"
+    >
+      {showPassword ? <FaEyeSlash /> : <FaEye />}
+    </button>
+  </div>
 
-              <div className="relative">
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  name="confirmPassword"
-                  value={form.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="Confirm Password"
-                  className="w-full px-4 py-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-orange-500"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-3 text-gray-400"
-                >
-                  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                </button>
-              </div>
+  {/* CONFIRM PASSWORD */}
+  <div className="relative">
+    <input
+      type={showConfirmPassword ? "text" : "password"}
+      name="confirmPassword"
+      value={form.confirmPassword}
+      onChange={handleChange}
+      placeholder="Confirm Password"
+      className="w-full px-4 py-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-orange-500"
+    />
+    <button
+      type="button"
+      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+      className="absolute right-3 top-3 text-gray-400"
+    >
+      {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+    </button>
+  </div>
 
-            </div>
+</div>
 
             {/* BUTTON */}
             <button className="w-full bg-black text-white py-4 rounded-xl flex justify-center items-center gap-2 hover:bg-orange-600 transition">
