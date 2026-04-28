@@ -240,6 +240,8 @@ import {
   FaTrash,
 } from "react-icons/fa";
 
+import { client } from "../../lib/sanity";
+
 export default function OrderDetails() {
   const { orderId } = useParams();
   const navigate = useNavigate();
@@ -250,12 +252,35 @@ export default function OrderDetails() {
   const [actionType, setActionType] = useState("");
   const [selectedItemId, setSelectedItemId] = useState(null);
 
+  // ✅ FETCH ORDER FROM SANITY
   useEffect(() => {
-    const orders = JSON.parse(localStorage.getItem("orders")) || [];
-    const foundOrder = orders.find((o) => String(o.id) === orderId);
+    const fetchOrder = async () => {
+      try {
+        const data = await client.fetch(
+          `*[_type == "order" && orderId == $id][0]{
+            orderId,
+            date,
+            status,
+            total,
+            items,
+            address
+          }`,
+          { id: orderId }
+        );
 
-    if (!foundOrder) navigate("/orders");
-    else setOrder(foundOrder);
+        if (!data) navigate("/orders");
+
+        setOrder({
+          id: data.orderId,
+          ...data,
+        });
+      } catch (err) {
+        console.error(err);
+        navigate("/orders");
+      }
+    };
+
+    fetchOrder();
   }, [orderId, navigate]);
 
   if (!order) return null;
@@ -273,52 +298,25 @@ export default function OrderDetails() {
     setShowModal(true);
   };
 
-  const handleConfirm = () => {
-    let orders = JSON.parse(localStorage.getItem("orders")) || [];
-
+  // ⚠️ NOTE: Sanity update logic (optional)
+  const handleConfirm = async () => {
     if (actionType === "order") {
-      orders = orders.filter((o) => String(o.id) !== orderId);
-      localStorage.setItem("orders", JSON.stringify(orders));
-      window.dispatchEvent(new Event("ordersUpdated"));
-      setShowModal(false);
+      await client.delete(order._id);
       navigate("/orders");
-      return;
     }
 
     if (actionType === "item") {
-      const updatedOrders = orders
-        .map((o) => {
-          if (String(o.id) === orderId) {
-            const updatedItems = o.items.filter(
-              (i) => i.id !== selectedItemId
-            );
-
-            if (updatedItems.length === 0) return null;
-
-            const newTotal = updatedItems.reduce(
-              (sum, item) => sum + item.price * item.quantity,
-              0
-            );
-
-            return {
-              ...o,
-              items: updatedItems,
-              total: newTotal,
-            };
-          }
-          return o;
-        })
-        .filter(Boolean);
-
-      localStorage.setItem("orders", JSON.stringify(updatedOrders));
-      window.dispatchEvent(new Event("ordersUpdated"));
-
-      const updatedOrder = updatedOrders.find(
-        (o) => String(o.id) === orderId
+      const updatedItems = order.items.filter(
+        (i, index) =>
+          (i.id || i._key || index) !== selectedItemId
       );
 
-      if (!updatedOrder) navigate("/orders");
-      else setOrder(updatedOrder);
+      await client
+        .patch(order._id)
+        .set({ items: updatedItems })
+        .commit();
+
+      setOrder({ ...order, items: updatedItems });
     }
 
     setShowModal(false);
@@ -367,15 +365,19 @@ export default function OrderDetails() {
 
             {/* ITEMS */}
             <div className="bg-white rounded-2xl md:rounded-3xl p-5 md:p-8 shadow-sm border">
+
               <div className="flex items-center gap-3 mb-5">
                 <FaBox className="text-orange-600" />
-                <h3 className="text-lg md:text-xl font-bold">Order Items</h3>
+                <h3 className="text-lg md:text-xl font-bold">
+                  Order Items
+                </h3>
               </div>
 
               <div className="space-y-5">
-                {order.items.map((item) => (
+
+                {order.items?.map((item, index) => (
                   <div
-                    key={item.id}
+                    key={item.id || item._key || index}   // ✅ FIXED KEY ISSUE
                     className="flex flex-col sm:flex-row gap-4 border-b pb-4"
                   >
                     <img
@@ -397,14 +399,17 @@ export default function OrderDetails() {
 
                     {order.status !== "Delivered" && (
                       <button
-                        onClick={() => openRemoveItem(item.id)}
-                        className="flex items-center gap-2 text-red-500 text-sm font-bold hover:underline self-start sm:self-center"
+                        onClick={() =>
+                          openRemoveItem(item.id || item._key || index)
+                        }
+                        className="flex items-center gap-2 text-red-500 text-sm font-bold hover:underline"
                       >
                         <FaTrash size={12} /> Remove
                       </button>
                     )}
                   </div>
                 ))}
+
               </div>
             </div>
 
@@ -415,6 +420,7 @@ export default function OrderDetails() {
 
             {/* ADDRESS */}
             <div className="bg-white rounded-2xl md:rounded-3xl p-5 md:p-8 shadow-sm border">
+
               <div className="flex items-center gap-3 mb-3">
                 <FaMapMarkerAlt className="text-orange-600" />
                 <h3 className="font-bold text-lg md:text-xl">
@@ -423,15 +429,15 @@ export default function OrderDetails() {
               </div>
 
               <p className="font-bold text-sm md:text-base">
-                {order.address.name}
+                {order.address?.name}
               </p>
               <p className="text-gray-600 text-sm">
-                {order.address.address}
+                {order.address?.address}
               </p>
 
               <div className="flex items-center gap-2 mt-3 text-orange-600 font-bold text-sm">
                 <FaPhoneAlt size={12} />
-                {order.address.phone}
+                {order.address?.phone}
               </div>
             </div>
           </div>
@@ -447,7 +453,7 @@ export default function OrderDetails() {
                 </h3>
               </div>
 
-              <div className="flex justify-between text-base md:text-lg font-semibold">
+              <div className="flex justify-between font-semibold">
                 <span>Total</span>
                 <span className="text-orange-500">
                   ₹{order.total}
@@ -474,6 +480,7 @@ export default function OrderDetails() {
       {showModal && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-xl p-5 md:p-6 w-full max-w-md text-center">
+
             <h2 className="text-lg md:text-xl font-bold mb-2">
               {actionType === "order"
                 ? "Cancel this Order?"
@@ -481,23 +488,25 @@ export default function OrderDetails() {
             </h2>
 
             <p className="text-gray-500 text-sm mb-5">
-              Are you sure you want to continue?
+              Are you sure?
             </p>
 
-            <div className="flex flex-col sm:flex-row justify-center gap-3">
+            <div className="flex gap-3 justify-center">
+
               <button
                 onClick={() => setShowModal(false)}
-                className="px-4 py-2 rounded-lg bg-gray-200 w-full sm:w-auto"
+                className="px-4 py-2 rounded-lg bg-gray-200"
               >
                 No
               </button>
 
               <button
                 onClick={handleConfirm}
-                className="px-4 py-2 rounded-lg bg-red-600 text-white w-full sm:w-auto"
+                className="px-4 py-2 rounded-lg bg-red-600 text-white"
               >
                 Yes
               </button>
+
             </div>
           </div>
         </div>

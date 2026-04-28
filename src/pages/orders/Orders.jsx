@@ -116,30 +116,44 @@ import {
   FaRegClock,
   FaTruck,
 } from "react-icons/fa";
+import { client } from "../../lib/sanity";
 
 export default function Orders() {
   const [orders, setOrders] = useState([]);
 
-  // ✅ LOAD ORDERS FROM LOCALSTORAGE
+  // ✅ FETCH FROM SANITY
   useEffect(() => {
-    const storedOrders =
-      JSON.parse(localStorage.getItem("orders")) || [];
-    setOrders(storedOrders);
+    const fetchOrders = async () => {
+      try {
+        const data = await client.fetch(`
+          *[_type == "order"] | order(_createdAt desc){
+            orderId,
+            date,
+            status,
+            total,
+            items
+          }
+        `);
 
-    // ✅ Listen for updates (after checkout)
-    const handleUpdate = () => {
-      const updated =
-        JSON.parse(localStorage.getItem("orders")) || [];
-      setOrders(updated);
+        // normalize for UI
+        const formatted = data.map((o) => ({
+          id: o.orderId,
+          date: o.date,
+          status: o.status,
+          total: o.total,
+          items: o.items || [],
+        }));
+
+        setOrders(formatted);
+      } catch (err) {
+        console.error("Orders fetch error:", err);
+      }
     };
 
-    window.addEventListener("ordersUpdated", handleUpdate);
-
-    return () => {
-      window.removeEventListener("ordersUpdated", handleUpdate);
-    };
+    fetchOrders();
   }, []);
 
+  // ✅ STATUS STYLE
   const statusStyle = (status) => {
     switch (status) {
       case "Delivered":
@@ -179,6 +193,7 @@ export default function Orders() {
                 key={order.id}
                 className="group bg-white rounded-3xl p-6 md:p-8 border shadow-sm hover:shadow-xl transition"
               >
+
                 <div className="flex flex-col md:flex-row justify-between gap-6">
 
                   {/* LEFT */}

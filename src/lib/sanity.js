@@ -28,6 +28,7 @@ export const client = createClient({
   useCdn: false,
   apiVersion: "2023-01-01",
    perspective: "published",
+   token:"skgfFDmkkyPSp1s9XewhrrC6BTEbja8Qv94h5ijr6g89XGTH0iRuYitrDpxEIu3h0x6xNhyzYqI72M6F2Dlaa8sTiCSL9EGPn6WNzvlMcUOjq4hTqQuTwPLhqVaRBPjTw89goUUHs1Y4JHwASsH99Il8Zbr62QhwVqgzhl618dAuA9kJ4HIm"
 });
 
 // ✅ IMAGE BUILDER
