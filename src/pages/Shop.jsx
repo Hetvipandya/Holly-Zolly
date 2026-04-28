@@ -407,7 +407,7 @@ export default function Shop() {
           <div className="lg:col-span-3">
 
             <p className="mb-6 text-gray-500">
-              Showing {filteredProducts.length} results
+              Showing {filteredProducts.length} results 
             </p>
 
             {filteredProducts.length === 0 ? (
