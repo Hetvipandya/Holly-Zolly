@@ -191,7 +191,7 @@ export default function Dashboard() {
     },
     {
       id: "PAY-1004",
-      orderId: "ORD-204",
+      orderId: "ORD-204", 
       customer: "Priya Verma",
       amount: 1999,
       method: "UPI",
@@ -204,405 +204,131 @@ export default function Dashboard() {
 
 
   const COLORS = ["#2563eb", "#16a34a", "#f97316", "#dc2626"];
-
+ 
   return (
-    <>
-      {/* STATS */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10 ">
-        {stats.map((stat, index) => (
-          <div
-            key={index}
-            className="bg-white p-6 rounded shadow"
-          >
-            <h3 className="text-sm text-gray-500 font-semibold">{stat.title}</h3>
-            <p className="text-2xl font-bold mt-2 text-primary">
-              {stat.value}
+  <div className="p-6 bg-gray-50 min-h-screen">
+
+    {/* 🔥 STATS */}
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+      {stats.map((stat, index) => (
+        <div key={index} className="bg-white p-4 rounded-xl shadow hover:shadow-md transition">
+          <p className="text-xs text-gray-500">{stat.title}</p>
+          <h2 className="text-xl font-bold text-primary mt-1">{stat.value}</h2>
+        </div>
+      ))}
+    </div>
+
+    {/* 🔥 CHARTS */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+      {/* SALES */}
+      <div className="bg-white p-5 rounded-xl shadow">
+        <h3 className="font-semibold mb-4 text-gray-700">Monthly Sales</h3>
+        <ResponsiveContainer height={250}>
+          <BarChart data={salesData}>
+            <XAxis dataKey="month" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="sales" radius={[6, 6, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* PIE COMBINED */}
+      <div className="bg-white p-5 rounded-xl shadow">
+        <h3 className="font-semibold mb-4 text-gray-700">Order Status</h3>
+        <ResponsiveContainer height={250}>
+          <PieChart>
+            <Pie data={orderStatusData} dataKey="value" outerRadius={90}>
+              {orderStatusData.map((_, i) => (
+                <Cell key={i} fill={COLORS[i]} />
+              ))}
+            </Pie>
+            <Tooltip />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+
+    {/* 🔥 TABLE SECTION */}
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+      {/* RECENT ORDERS */}
+      <div className="bg-white p-5 rounded-xl shadow">
+        <h3 className="font-semibold mb-4">Recent Orders</h3>
+        <div className="overflow-auto max-h-[300px]">
+          <table className="w-full text-sm">
+            <thead className="text-gray-500">
+              <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>₹</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentOrders.map((o) => (
+                <tr key={o.id} className="border-t">
+                  <td>{o.id}</td>
+                  <td>{o.customer}</td>
+                  <td>{o.amount}</td>
+                  <td>
+                    <span className="text-xs px-2 py-1 rounded bg-gray-100">
+                      {o.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* LOW STOCK */}
+      <div className="bg-white p-5 rounded-xl shadow">
+        <h3 className="font-semibold mb-4">Low Stock</h3>
+        <div className="overflow-auto max-h-[300px]">
+          <table className="w-full text-sm">
+            <thead className="text-gray-500">
+              <tr>
+                <th>Product</th>
+                <th>Stock</th>
+              </tr>
+            </thead>
+            <tbody>
+              {lowStockProducts.map((p) => (
+                <tr key={p.id} className="border-t">
+                  <td>{p.name}</td>
+                  <td className="font-bold text-red-500">{p.stock}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    {/* 🔥 TOP PRODUCTS */}
+    <div className="bg-white p-5 rounded-xl shadow mt-6">
+      <h3 className="font-semibold mb-4">Top Selling Products</h3>
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {topSellingProducts.map((p, i) => (
+          <div key={p.id} className="border rounded-lg p-4 hover:shadow">
+            <p className="text-sm text-gray-500">#{i + 1}</p>
+            <h4 className="font-semibold">{p.name}</h4>
+            <p className="text-xs text-gray-500">{p.category}</p>
+            <p className="mt-2 font-bold">{p.sold} sold</p>
+            <p className="text-green-600 text-sm">
+              ₹{p.revenue.toLocaleString()}
             </p>
           </div>
         ))}
       </div>
+    </div>
 
-
-      <div className=" space-y-8">
-
-        {/* CHARTS */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-          {/* SALES BAR CHART */}
-          <div className="bg-white p-4 pb-10 rounded shadow h-[300px] w-full">
-            <h3 className="font-semibold mb-4 text-primary">Monthly Sales</h3>
-            <ResponsiveContainer >
-              <BarChart data={salesData}>
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="sales" fill="#2563eb" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* REVENUE PIE */}
-          <div className="bg-white p-4 rounded shadow h-[300px] w-full">
-            <h3 className="font-semibold mb-4 text-primary">Revenue by Category</h3>
-            <ResponsiveContainer >
-              <PieChart>
-                <Pie
-                  data={revenueByCategory}
-                  dataKey="value"
-                  nameKey="name"
-                  outerRadius={80}
-                >
-                  {revenueByCategory.map((_, i) => (
-                    <Cell key={i} fill={COLORS[i]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-
-          {/* ORDER STATUS PIE */}
-          <div className="bg-white p-4 rounded shadow h-[300px] w-full">
-            <h3 className="font-semibold mb-4 text-primary">Order Status</h3>
-            <ResponsiveContainer >
-              <PieChart>
-                <Pie
-                  data={orderStatusData}
-                  dataKey="value"
-                  nameKey="name"
-                  outerRadius={80}
-                >
-                  {orderStatusData.map((_, i) => (
-                    <Cell key={i} fill={COLORS[i]} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* RECENT ORDERS TABLE */}
-        <div className="bg-white p-6 rounded shadow ">
-          <h3 className="text-xl font-semibold mb-6 text-primary">
-            Recent Orders
-          </h3>
-
-          <div className="relative w-full">
-            <div className="overflow-x-auto overflow-y-hidden border border-primary/30">
-              <table className="w-full min-w-[800px] border-collapse text-left ">
-                <thead>
-                  <tr className="border-b bg-primary/70 text-white border-primary/30">
-                    <th className="py-3 px-2">Order ID</th>
-                    <th className="px-2">Customer</th>
-                    <th className="px-2">Amount</th>
-                    <th className="px-2">Status</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {recentOrders.map((order) => (
-                    <tr key={order.id} className="border-b border-primary/30">
-                      <td className="py-3 px-2">{order.id}</td>
-                      <td className="px-2">{order.customer}</td>
-                      <td className="px-2">₹{order.amount}</td>
-                      <td className="px-2">
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap ${order.status === "Delivered"
-                            ? "bg-green-100 text-green-700"
-                            : order.status === "Pending"
-                              ? "bg-yellow-100 text-yellow-700"
-                              : order.status === "Shipped"
-                                ? "bg-blue-100 text-blue-700"
-                                : "bg-red-100 text-red-700"
-                            }`}
-                        >
-                          {order.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-
-
-        </div>
-
-        {/* LOW STOCK PRODUCTS TABLE */}
-        <div className="bg-white p-6 rounded shadow">
-          <h3 className="text-xl font-semibold mb-6 text-primary">
-            Low Stock Products
-          </h3>
-
-          <div className="relative w-full">
-            <div className="overflow-x-auto overflow-y-hidden border border-primary/30">
-              <table className="w-full min-w-[900px] border-collapse text-left">
-                <thead>
-                  <tr className="border-b bg-primary/70 text-white border-primary/30">
-                    <th className="py-3 px-2">Product ID</th>
-                    <th className="px-2">Product Name</th>
-                    <th className="px-2">Category</th>
-                    <th className="px-2">Stock</th>
-                    <th className="px-2">Status</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {lowStockProducts.map((product) => (
-                    <tr
-                      key={product.id}
-                      className="border-b border-primary/30"
-                    >
-                      <td className="py-3 px-2">{product.id}</td>
-                      <td className="px-2 font-semibold">
-                        {product.name}
-                      </td>
-                      <td className="px-2">{product.category}</td>
-                      <td className="px-2 font-bold">
-                        {product.stock}
-                      </td>
-                      <td className="px-2">
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap ${product.stock === 0
-                            ? "bg-red-100 text-red-700"
-                            : "bg-yellow-100 text-yellow-700"
-                            }`}
-                        >
-                          {product.stock === 0
-                            ? "Out of Stock"
-                            : "Low Stock"}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        {/* TOP SELLING PRODUCTS TABLE */}
-        <div className="bg-white p-6 rounded shadow">
-          <h3 className="text-xl font-semibold mb-6 text-primary">
-            Top Selling Products
-          </h3>
-
-          <div className="relative w-full">
-            <div className="overflow-x-auto overflow-y-hidden border border-primary/30">
-              <table className="w-full min-w-[950px] border-collapse text-left">
-                <thead>
-                  <tr className="border-b bg-primary/70 text-white border-primary/30">
-                    <th className="py-3 px-2">Rank</th>
-                    <th className="px-2">Product ID</th>
-                    <th className="px-2">Product Name</th>
-                    <th className="px-2">Category</th>
-                    <th className="px-2">Units Sold</th>
-                    <th className="px-2">Revenue</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {topSellingProducts.map((product, index) => (
-                    <tr
-                      key={product.id}
-                      className="border-b border-primary/30"
-                    >
-                      {/* RANK */}
-                      <td className="py-3 px-2">
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm font-bold ${index === 0
-                            ? "bg-yellow-100 text-yellow-800"
-                            : index === 1
-                              ? "bg-gray-100 text-gray-700"
-                              : index === 2
-                                ? "bg-orange-100 text-orange-700"
-                                : "bg-blue-100 text-blue-700"
-                            }`}
-                        >
-                          #{index + 1}
-                        </span>
-                      </td>
-
-                      <td className="px-2">{product.id}</td>
-
-                      <td className="px-2 font-semibold">
-                        {product.name}
-                      </td>
-
-                      <td className="px-2">{product.category}</td>
-
-                      <td className="px-2 font-bold">
-                        {product.sold}
-                      </td>
-
-                      <td className="px-2 font-semibold text-green-700">
-                        ₹{product.revenue.toLocaleString()}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        {/* RETURNS & REFUNDS SUMMARY */}
-        <div className="bg-white p-6 rounded shadow">
-          <h3 className="text-xl font-semibold mb-6 text-primary">
-            Returns & Refunds Summary
-          </h3>
-
-          <div className="relative w-full">
-            <div className="overflow-x-auto overflow-y-hidden border border-primary/30">
-              <table className="w-full min-w-[1000px] border-collapse text-left">
-                <thead>
-                  <tr className="border-b bg-primary/70 text-white border-primary/30">
-                    <th className="py-3 px-2">Order ID</th>
-                    <th className="px-2">Customer</th>
-                    <th className="px-2">Type</th>
-                    <th className="px-2">Reason</th>
-                    <th className="px-2">Amount</th>
-                    <th className="px-2">Status</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {returnsRefunds.map((item) => (
-                    <tr
-                      key={item.id}
-                      className="border-b border-primary/30"
-                    >
-                      <td className="py-3 px-2">{item.id}</td>
-                      <td className="px-2">{item.customer}</td>
-
-                      {/* TYPE */}
-                      <td className="px-2 font-semibold">
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm ${item.type === "Return"
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-purple-100 text-purple-700"
-                            }`}
-                        >
-                          {item.type}
-                        </span>
-                      </td>
-
-                      <td className="px-2 text-sm text-gray-600">
-                        {item.reason}
-                      </td>
-
-                      <td className="px-2 font-semibold">
-                        ₹{item.amount}
-                      </td>
-
-                      {/* STATUS */}
-                      <td className="px-2">
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap ${item.status === "Pending"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : item.status === "Approved"
-                              ? "bg-blue-100 text-blue-700"
-                              : item.status === "Refunded"
-                                ? "bg-green-100 text-green-700"
-                                : "bg-red-100 text-red-700"
-                            }`}
-                        >
-                          {item.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        {/* PAYMENT SUMMARY */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
-          <div className="bg-white p-5 rounded shadow border border-primary/30">
-            <p className="text-sm text-gray-500">Total Payments</p>
-            <h3 className="text-2xl font-bold text-primary">₹8,396</h3>
-          </div>
-
-          <div className="bg-white p-5 rounded shadow border border-primary/30">
-            <p className="text-sm text-gray-500">Successful</p>
-            <h3 className="text-2xl font-bold text-green-600">₹4,498</h3>
-          </div>
-
-          <div className="bg-white p-5 rounded shadow border border-primary/30">
-            <p className="text-sm text-gray-500">Pending</p>
-            <h3 className="text-2xl font-bold text-yellow-600">₹1,599</h3>
-          </div>
-
-          <div className="bg-white p-5 rounded shadow border border-primary/30">
-            <p className="text-sm text-gray-500">Failed</p>
-            <h3 className="text-2xl font-bold text-red-600">₹3,299</h3>
-          </div>
-        </div>
-
-        {/* PAYMENTS OVERVIEW TABLE */}
-        <div className="bg-white p-6 rounded shadow">
-          <h3 className="text-xl font-semibold mb-6 text-primary">
-            Payments Overview
-          </h3>
-
-          <div className="overflow-x-auto border border-primary/30">
-            <table className="w-full min-w-[900px] border-collapse text-left">
-              <thead>
-                <tr className="bg-primary/70 text-white border-b border-primary/30">
-                  <th className="py-3 px-2">Payment ID</th>
-                  <th className="px-2">Order ID</th>
-                  <th className="px-2">Customer</th>
-                  <th className="px-2">Amount</th>
-                  <th className="px-2">Method</th>
-                  <th className="px-2">Status</th>
-                  <th className="px-2">Date</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {payments.map((pay) => (
-                  <tr
-                    key={pay.id}
-                    className="border-b border-primary/30"
-                  >
-                    <td className="py-3 px-2">{pay.id}</td>
-                    <td className="px-2">{pay.orderId}</td>
-                    <td className="px-2">{pay.customer}</td>
-                    <td className="px-2 font-semibold">₹{pay.amount}</td>
-                    <td className="px-2">{pay.method}</td>
-
-                    {/* STATUS */}
-                    <td className="px-2">
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap ${pay.status === "Success"
-                          ? "bg-green-100 text-green-700"
-                          : pay.status === "Pending"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : "bg-red-100 text-red-700"
-                          }`}
-                      >
-                        {pay.status}
-                      </span>
-                    </td>
-
-                    <td className="px-2 text-sm text-gray-600">
-                      {pay.date}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-      </div>
-
-    </>
-  );
+  </div>
+);
 }
 

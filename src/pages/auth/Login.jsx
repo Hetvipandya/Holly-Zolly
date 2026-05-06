@@ -5,7 +5,7 @@ import {
   FaEye,
   FaEyeSlash,
   FaEnvelope,
-  FaLock, 
+  FaLock,
   FaArrowRight,
 } from "react-icons/fa";
 
@@ -24,53 +24,77 @@ export default function Login() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // EMAIL VALIDATION
-  const isValidEmail = (email) => {
-    return /\S+@\S+\.\S+/.test(email);
-  };
+const handleLogin = async (e) => {
+  e.preventDefault();
 
-  // LOGIN
-  const handleLogin = (e) => {
-    e.preventDefault();
+  const email = form.email.trim();
+  const password = form.password;
 
-    const email = form.email.trim();
-    const password = form.password;
+  if (!email || !password) {
+    toast.error("⚠️ All fields are required");
+    return;
+  }
 
-    // ❌ EMPTY CHECK
-    if (!email || !password) {
-      toast.error("⚠️ All fields are required");
-      return;
-    }
+  if (!/\S+@\S+\.\S+/.test(email)) {
+    toast.error("⚠️ Invalid email format");
+    return;
+  }
 
-    // ❌ EMAIL CHECK
-    if (!isValidEmail(email)) {
-      toast.error("⚠️ Invalid email format");
-      return;
-    }
+  // 🔥 STEP 1: ADMIN DIRECT LOGIN (NO API)
+  if (email === "admin@gmail.com" && password === "Admin123") {
 
-    const users = JSON.parse(localStorage.getItem("users")) || [];
+    // dummy admin user
+    const adminUser = {
+      name: "Admin",
+      email: "admin@gmail.com"
+    };
 
-    const user = users.find(
-      (u) => u.email === email && u.password === password
-    );
+    localStorage.setItem("token", "admin-token");
+    localStorage.setItem("currentUser", JSON.stringify(adminUser));
+    localStorage.setItem("isAdmin", "true");
 
-    if (!user) {
-      toast.error("⚠️ Invalid email or password");
-      return;
-    }
+    toast.success("👑 Welcome Admin!");
 
-    // ✅ SAVE USER
-    localStorage.setItem("currentUser", JSON.stringify(user));
-
-    // 🎉 SUCCESS TOAST
-    toast.success(`🎉 Welcome ${user.name.split(" ")[0]}!`);
-
-    // smooth redirect
     setTimeout(() => {
-      const redirectTo = location.state?.from || "/";
-      navigate(redirectTo);
+      navigate("/"); // or /admin
+    }, 500);
+
+    return; // ⛔ STOP HERE (API call nahi karvo)
+  }
+
+  // 🔥 STEP 2: NORMAL USER LOGIN (API)
+  try {
+    const res = await fetch("https://holly-zolly-cvjd.onrender.com/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      toast.error(data.message || "Invalid email or password");
+      return;
+    }
+
+    // ✅ NORMAL USER
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("currentUser", JSON.stringify(data.user));
+    localStorage.removeItem("isAdmin"); // 🔥 IMPORTANT
+
+    toast.success(`🎉 Welcome ${data.user.name.split(" ")[0]}!`);
+
+    setTimeout(() => {
+      navigate("/");
     }, 800);
-  };
+
+  } catch (error) {
+    console.log(error);
+    toast.error("❌ Server error");
+  }
+};
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-[#FCFBFA] py-16 px-6 relative overflow-hidden">

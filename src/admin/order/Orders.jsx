@@ -1,36 +1,75 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaEye } from "react-icons/fa";
 import OrderDetailsModal from "../components/OrderDetailsModal";
 
+const backendUrl = "https://holly-zolly-cvjd.onrender.com";
+
+const normalizeOrder = (order) => ({
+  id: order._id || order.id,
+  customer: order.userId?.name || order.customer || "Unknown Customer",
+  date: order.createdAt
+    ? new Date(order.createdAt).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    : order.date || "",
+  total: order.totalPrice || order.total || 0,
+  payment: order.paymentMethod || order.payment || "N/A",
+  status: order.status || "Pending",
+  items:
+    order.products?.map((item) => ({
+      name: item.productId?.productName || item.name || "Item",
+      qty: item.quantity || item.qty || 0,
+      price: item.productId?.price || item.price || 0,
+    })) || order.items || [],
+});
+
+const parseOrderResponse = (data) => {
+  if (!data) return [];
+  const orders = data.orders || data;
+  if (!Array.isArray(orders)) return [];
+  return orders.map(normalizeOrder);
+};
 
 export default function Orders() {
-  const [orders, setOrders] = useState([
-    {
-      id: "ORD1001",
-      customer: "Rahul Sharma",
-      date: "10 Sep 2025",
-      total: 2599,
-      payment: "COD",
-      status: "Pending",
-      items: [
-        { name: "Running Sneakers", qty: 1, price: 2599 },
-      ],
-    },
-    {
-      id: "ORD1002",
-      customer: "Anita Patel",
-      date: "12 Sep 2025",
-      total: 4397,
-      payment: "Razorpay",
-      status: "Shipped",
-      items: [
-        { name: "Men T-Shirt", qty: 1, price: 799 },
-        { name: "Sneakers Shoes", qty: 2, price: 1799 },
-      ],
-    },
-  ]);
-
+  const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      setLoading(true);
+      setError(null);
+
+      const tryFetch = async (path) => {
+        const res = await fetch(path);
+        if (!res.ok) {
+          throw new Error(`${res.status} ${res.statusText}`);
+        }
+        return res.json();
+      };
+
+      try {
+        let data;
+        try {
+          data = await tryFetch(`${backendUrl}/api/orders`);
+        } catch (err) {
+          data = await tryFetch(`${backendUrl}/api/order`);
+        }
+
+        setOrders(parseOrderResponse(data));
+      } catch (err) {
+        console.error("Fetch orders failed:", err);
+        setError("Unable to load orders. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   const updateStatus = (id, status) => {
     setOrders(
@@ -60,9 +99,19 @@ export default function Orders() {
         Orders Management
       </h2>
 
-      {/* ORDERS TABLE */}
-      <div className="bg-white rounded shadow overflow-x-auto">
-        <table className="w-full text-sm">
+      {error && (
+        <div className="mb-4 rounded border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {error}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="mb-4 rounded border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700">
+          Loading orders...
+        </div>
+      ) : (
+        <div className="bg-white rounded shadow overflow-x-auto">
+          <table className="w-full text-sm">
           <thead className="bg-primary/70 ">
             <tr className="text-light">
               <th className="p-3 text-left">Order ID</th>
@@ -105,8 +154,8 @@ export default function Orders() {
           </tbody>
         </table>
       </div>
+      )}
 
-      {/* ORDER DETAILS MODAL */}
       {selectedOrder && (
         <OrderDetailsModal
           order={selectedOrder}

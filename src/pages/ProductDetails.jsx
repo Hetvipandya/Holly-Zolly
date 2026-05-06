@@ -1,273 +1,200 @@
 // import { Link, useParams } from "react-router-dom";
 // import { useState, useEffect } from "react";
-// import { getProducts } from "../data/products";
-// import { FaHeart } from "react-icons/fa";
+// import { FaHeart, FaStar } from "react-icons/fa";
 // import { FiArrowLeft } from "react-icons/fi";
-// import toast from "react-hot-toast";
 
 // export default function ProductDetails() {
 //   const { id } = useParams();
 
-//   const [products, setProducts] = useState([]);
 //   const [product, setProduct] = useState(null);
+//   const [products, setProducts] = useState([]);
+//   const [loading, setLoading] = useState(true);
 
-//   const [activeImage, setActiveImage] = useState("");
-//   const [selectedSize, setSelectedSize] = useState("");
-//   const [isWishlisted, setIsWishlisted] = useState(false);
+//   const backendUrl = "http://localhost:5001";
 
-//   // 🔥 Toast Style
-//   const toastStyle = {
-//     position: "bottom-right",
-//     style: {
-//       background: "#4B5563",
-//       color: "#fff",
-//       borderRadius: "10px",
-//     },
-//   };
-
-//   // ✅ Load Products
+//   // ---------------- FETCH SINGLE PRODUCT ----------------
 //   useEffect(() => {
-//     const data = getProducts(); // if async → use await
-//     setProducts(data);
+//     const fetchProduct = async () => {
+//       try {
+//         setLoading(true);
+
+//         const res = await fetch(
+//           `${backendUrl}/api/product/${id}`
+//         );
+
+//         const data = await res.json();
+
+//         setProduct(data.data || data);
+
+//       } catch (err) {
+//         console.log(err.message);
+//         setProduct(null);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     if (id) fetchProduct();
+//   }, [id]);
+
+//   // ---------------- FETCH ALL PRODUCTS (RELATED) ----------------
+//   useEffect(() => {
+//     const fetchAllProducts = async () => {
+//       try {
+//         const res = await fetch(
+//           `${backendUrl}/api/product/all`
+//         );
+
+//         const data = await res.json();
+
+//         setProducts(data.data || data || []);
+//       } catch (err) {
+//         console.log(err.message);
+//       }
+//     };
+
+//     fetchAllProducts();
 //   }, []);
 
-//   // ✅ Find Product
-//   useEffect(() => {
-//     if (products.length > 0) {
-//       const found = products.find((p) => p.id === Number(id));
-//       setProduct(found);
-//     }
-//   }, [products, id]);
+//   if (loading)
+//     return <div className="p-10 text-center font-bold">Loading...</div>;
 
-//   // ✅ Setup Product State
-//   useEffect(() => {
-//     if (product) {
-//       setActiveImage(product.images?.[0] || "");
-//       setSelectedSize(product.sizes?.[0] || "");
-
-//       const wishlist =
-//         JSON.parse(localStorage.getItem("wishlistItems")) || [];
-
-//       const exists = wishlist.find(
-//         (item) =>
-//           item.id === product.id &&
-//           item.selectedSize === (product.sizes?.[0] || "")
-//       );
-
-//       setIsWishlisted(!!exists);
-//     }
-//   }, [product]);
-
-//   if (!product) {
-//     return <div className="p-10 text-center">Loading...</div>;
-//   }
-
-//   // 🛒 ADD TO CART
-//   const addToCart = () => {
-//     const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
-
-//     const index = cart.findIndex(
-//       (item) =>
-//         item.id === product.id &&
-//         item.selectedSize === selectedSize
+//   if (!product)
+//     return (
+//       <div className="p-10 text-center">
+//         <h2 className="text-red-500 text-xl font-bold">
+//           Product Not Found
+//         </h2>
+//         <Link to="/shop" className="text-blue-500 underline mt-4 block">
+//           Back to Shop
+//         </Link>
+//       </div>
 //     );
 
-//     if (index > -1) {
-//       cart[index].quantity += 1;
-//     } else {
-//       cart.push({
-//         id: product.id,
-//         name: product.name,
-//         price: product.price,
-//         image: product.images[0],
-//         quantity: 1,
-//         selectedSize,
-//       });
-//     }
-
-//     localStorage.setItem("cartItems", JSON.stringify(cart));
-//     window.dispatchEvent(new Event("cartUpdated"));
-
-//     toast.success("Added to cart 🛒", toastStyle);
-//   };
-
-//   // ❤️ TOGGLE WISHLIST
-//   const toggleWishlist = () => {
-//     const wishlist =
-//       JSON.parse(localStorage.getItem("wishlistItems")) || [];
-
-//     const index = wishlist.findIndex(
-//       (item) =>
-//         item.id === product.id &&
-//         item.selectedSize === selectedSize
-//     );
-
-//     if (index > -1) {
-//       wishlist.splice(index, 1);
-//       setIsWishlisted(false);
-//       toast.success("Removed from wishlist ❌", toastStyle);
-//     } else {
-//       wishlist.push({
-//         id: product.id,
-//         name: product.name,
-//         price: product.price,
-//         images: product.images,
-//         selectedSize,
-//       });
-//       setIsWishlisted(true);
-//       toast.success("Added to wishlist ❤️", toastStyle);
-//     }
-
-//     localStorage.setItem("wishlistItems", JSON.stringify(wishlist));
-//     window.dispatchEvent(new Event("wishlistUpdated"));
-//   };
+//   // ---------------- RELATED PRODUCTS ----------------
+//   const relatedProducts = products.filter(
+//     (p) =>
+//       p._id !== product._id &&
+//       p.categoryId?._id === product.categoryId?._id
+//   );
 
 //   return (
 //     <section className="py-10">
 //       <div className="max-w-6xl mx-auto px-6">
 
-//         {/* 🔙 BACK BUTTON */}
+//         {/* BACK */}
 //         <Link
 //           to="/shop"
-//           className="inline-flex items-center gap-2 mb-6 text-gray-600 font-medium hover:text-black transition-all duration-300 group"
+//           className="inline-flex items-center gap-2 mb-6 text-gray-600 hover:text-black"
 //         >
-//           <FiArrowLeft className="transition-transform duration-300 group-hover:-translate-x-1" />
-//           <span className="relative">
-//             Back
-//             <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-black transition-all duration-300 group-hover:w-full"></span>
-//           </span>
+//           <FiArrowLeft /> Back
 //         </Link>
 
 //         <div className="grid md:grid-cols-2 gap-10">
 
-//           {/* IMAGE */}
+//           {/* IMAGE FIX */}
 //           <div>
 //             <img
-//               src={activeImage}
-//               alt={product.name}
-//               className="w-full h-[400px] object-cover rounded"
+//               src={
+//                 product.image
+//                   ? `${backendUrl}/uploads/${product.image}`
+//                   : "https://via.placeholder.com/400"
+//               }
+//               alt={product.productName}
+//               className="w-full h-[450px] object-contain rounded-lg border bg-white"
+//               onError={(e) => {
+//                 e.target.src =
+//                   "https://via.placeholder.com/400?text=No+Image";
+//               }}
 //             />
-
-//             <div className="flex gap-3 mt-4">
-//               {product.images?.map((img, i) => (
-//                 <img
-//                   key={i}
-//                   src={img}
-//                   onClick={() => setActiveImage(img)}
-//                   className="w-20 h-20 object-cover cursor-pointer border"
-//                 />
-//               ))}
-//             </div>
 //           </div>
 
 //           {/* DETAILS */}
 //           <div>
-//             <h1 className="text-3xl font-bold">{product.name}</h1>
+//             <span className="text-sm text-orange-600 font-semibold uppercase">
+//               {product.categoryId?.name}
+//             </span>
 
-//             {/* PRICE */}
-//             <div className="mt-3 flex items-center gap-3">
-//               <p className="text-orange-600 text-2xl font-bold">
+//             <h1 className="text-4xl font-bold mt-2">
+//               {product.productName}
+//             </h1>
+
+//             <div className="mt-4 flex items-center gap-4">
+//               <p className="text-3xl font-bold text-black">
 //                 ₹{product.price}
 //               </p>
 
-//               {product.originalPrice && (
-//                 <>
-//                   <p className="text-gray-400 text-lg line-through">
-//                     ₹{product.originalPrice}
-//                   </p>
-//                   <span className="bg-green-100 text-green-600 px-2 py-1 text-xs rounded">
-//                     {Math.round(
-//                       ((product.originalPrice - product.price) /
-//                         product.originalPrice) *
-//                         100
-//                     )}
-//                     % OFF
-//                   </span>
-//                 </>
-//               )}
+//               <div className="flex items-center gap-1 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold">
+//                 <FaStar /> {product.rating}
+//               </div>
 //             </div>
 
-//             <p className="mt-4 text-gray-600">
+//             <p className="mt-6 text-gray-600 leading-relaxed">
 //               {product.description}
 //             </p>
 
-//             {/* SIZE */}
-//             {product.sizes && (
-//               <div className="mt-6">
-//                 <h4>Select Size</h4>
-//                 <div className="flex gap-2 mt-2">
-//                   {product.sizes.map((size) => (
-//                     <button
-//                       key={size}
-//                       onClick={() => setSelectedSize(size)}
-//                       className={`px-3 py-1 border ${
-//                         selectedSize === size
-//                           ? "bg-black text-white"
-//                           : ""
-//                       }`}
-//                     >
-//                       {size}
-//                     </button>
-//                   ))}
-//                 </div>
-//               </div>
-//             )}
-
-//             {/* BUTTONS */}
-//             <div className="flex gap-4 mt-6">
-//               <button
-//                 onClick={addToCart}
-//                 className="bg-orange-600 text-white px-6 py-2 rounded"
-//               >
-//                 Add to Cart
+//             <div className="flex gap-4 mt-10">
+//               <button className="flex-1 bg-orange-600 text-white py-3 rounded-md font-bold hover:bg-orange-700 transition">
+//                 Add To Cart
 //               </button>
 
-//               <button
-//                 onClick={toggleWishlist}
-//                 className={`border px-4 py-2 rounded ${
-//                   isWishlisted ? "bg-red-500 text-white" : ""
-//                 }`}
-//               >
-//                 <FaHeart />
+//               <button className="border p-3 rounded-md hover:bg-red-50">
+//                 <FaHeart className="text-gray-400 hover:text-red-500" />
 //               </button>
 //             </div>
 //           </div>
 //         </div>
 
-//         {/* RELATED PRODUCTS */}
-//         <div className="mt-16">
-//           <h2 className="text-2xl font-bold mb-6">
-//             Related Products
-//           </h2>
+//         {/* ---------------- RELATED PRODUCTS ---------------- */}
+//         {relatedProducts.length > 0 && (
+//           <div className="mt-16">
+//             <h2 className="text-2xl font-bold mb-6">
+//               Related Products
+//             </h2>
 
-//           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-//             {products
-//               .filter(
-//                 (p) =>
-//                   p.category === product.category &&
-//                   p.id !== product.id
-//               )
-//               .slice(0, 4)
-//               .map((item) => (
-//                 <Link key={item.id} to={`/product/${item.id}`}>
+//             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+
+//               {relatedProducts.slice(0, 4).map((item) => (
+//                 <Link
+//                   key={item._id}
+//                   to={`/product/${item._id}`}
+//                   className="border rounded-lg overflow-hidden hover:shadow-lg transition"
+//                 >
 //                   <img
-//                     src={item.images[0]}
-//                     className="h-40 w-full object-cover rounded"
+//                     src={
+//                       item.image
+//                         ? `${backendUrl}/uploads/${item.image}`
+//                         : "https://via.placeholder.com/300"
+//                     }
+//                     alt={item.productName}
+//                     className="h-40 w-full object-cover"
+//                     onError={(e) => {
+//                       e.target.src =
+//                         "https://via.placeholder.com/300?text=No+Image";
+//                     }}
 //                   />
-//                   <p className="mt-2">{item.name}</p>
 
-//                   <div className="flex gap-2">
-//                     <p className="text-orange-600">
-//                       ₹{item.price}
+//                   <div className="p-2">
+//                     <p className="font-semibold line-clamp-1">
+//                       {item.productName}
 //                     </p>
-//                     <p className="line-through text-gray-400">
-//                       ₹{item.originalPrice}
-//                     </p>
+
+//                     <div className="flex justify-between items-center mt-1">
+//                       <p className="text-orange-600 font-bold">
+//                         ₹{item.price}
+//                       </p>
+
+//                       <span className="text-xs text-gray-500">
+//                         ⭐ {item.rating || 4.2}
+//                       </span>
+//                     </div>
 //                   </div>
 //                 </Link>
 //               ))}
+
+//             </div>
 //           </div>
-//         </div>
+//         )}
 
 //       </div>
 //     </section>
@@ -276,289 +203,317 @@
 
 import { Link, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { getProducts } from "../data/products";
-import { FaHeart } from "react-icons/fa";
+import { FaHeart, FaStar, FaShoppingCart, FaMinus, FaPlus } from "react-icons/fa";
 import { FiArrowLeft } from "react-icons/fi";
 import toast from "react-hot-toast";
 
 export default function ProductDetails() {
   const { id } = useParams();
 
-  const [products, setProducts] = useState([]);
   const [product, setProduct] = useState(null);
-
-  const [activeImage, setActiveImage] = useState("");
-  const [selectedSize, setSelectedSize] = useState("");
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
-  const toastStyle = {
-    position: "bottom-right",
-    style: {
-      background: "#4B5563",
-      color: "#fff",
-      borderRadius: "10px",
-    },
-  };
+  const backendUrl = "https://holly-zolly-cvjd.onrender.com";
 
-  // ✅ FETCH PRODUCTS
+  // ---------------- FETCH SINGLE PRODUCT ----------------
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await getProducts();
-      setProducts(data);
+    const fetchProduct = async () => {
+      try {
+        setLoading(true);
+
+        const res = await fetch(`${backendUrl}/api/product/${id}`);
+        const data = await res.json();
+
+        setProduct(data.data || data);
+      } catch (err) {
+        console.log(err.message);
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
     };
-    fetchData();
+
+    if (id) fetchProduct();
+  }, [id]);
+
+  // ---------------- FETCH ALL PRODUCTS ----------------
+  useEffect(() => {
+    const fetchAllProducts = async () => {
+      try {
+        const res = await fetch(`${backendUrl}/api/product/all`);
+        const data = await res.json();
+
+        setProducts(data.data || data || []);
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
+
+    fetchAllProducts();
   }, []);
 
-  // ✅ FIND PRODUCT USING _id
+  // ---------------- CHECK WISHLIST ----------------
   useEffect(() => {
-    if (products.length > 0) {
-      const found = products.find((p) => p._id === id);
-      setProduct(found);
-    }
-  }, [products, id]);
+    if (!product) return;
 
-  // ✅ SET INITIAL STATE
-  useEffect(() => {
-    if (product) {
-      setActiveImage(product.images?.[0] || "");
-      setSelectedSize(product.sizes?.[0] || "");
+    const wishlist =
+      JSON.parse(localStorage.getItem("wishlistItems")) || [];
 
-      const wishlist =
-        JSON.parse(localStorage.getItem("wishlistItems")) || [];
-
-      const exists = wishlist.find(
-        (item) =>
-          item._id === product._id &&
-          item.selectedSize === (product.sizes?.[0] || "")
-      );
-
-      setIsWishlisted(!!exists);
-    }
+    const exists = wishlist.some((item) => item._id === product._id);
+    setIsWishlisted(exists);
   }, [product]);
 
-  if (!product) {
-    return <div className="p-10 text-center">Loading...</div>;
-  }
-
-  // 🛒 ADD TO CART
+  // ---------------- ADD TO CART ----------------
   const addToCart = () => {
+    const user = JSON.parse(localStorage.getItem("currentUser"));
+
+    if (!user) {
+      toast.error("Please login first ❗");
+      return;
+    }
+
     const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
 
-    const index = cart.findIndex(
-      (item) =>
-        item._id === product._id &&
-        item.selectedSize === selectedSize
-    );
+    const index = cart.findIndex((item) => item._id === product._id);
 
     if (index > -1) {
-      cart[index].quantity += 1;
+      cart[index].quantity += quantity;
     } else {
       cart.push({
         _id: product._id,
-        name: product.name,
+        name: product.productName,
         price: product.price,
-        image: product.images[0],
-        quantity: 1,
-        selectedSize,
+        image: product.image,
+        quantity: quantity,
       });
     }
 
     localStorage.setItem("cartItems", JSON.stringify(cart));
     window.dispatchEvent(new Event("cartUpdated"));
 
-    toast.success("Added to cart 🛒", toastStyle);
+    toast.success(`${quantity} item(s) added to cart 🛒`);
   };
 
-  // ❤️ TOGGLE WISHLIST
+  // ---------------- WISHLIST TOGGLE ----------------
   const toggleWishlist = () => {
     const wishlist =
       JSON.parse(localStorage.getItem("wishlistItems")) || [];
 
-    const index = wishlist.findIndex(
-      (item) =>
-        item._id === product._id &&
-        item.selectedSize === selectedSize
-    );
+    const index = wishlist.findIndex((item) => item._id === product._id);
 
     if (index > -1) {
       wishlist.splice(index, 1);
       setIsWishlisted(false);
-      toast.success("Removed from wishlist ❌", toastStyle);
+      toast.success("Removed from wishlist ❌");
     } else {
       wishlist.push({
         _id: product._id,
-        name: product.name,
+        name: product.productName,
         price: product.price,
-        images: product.images,
-        selectedSize,
+        image: product.image,
       });
       setIsWishlisted(true);
-      toast.success("Added to wishlist ❤️", toastStyle);
+      toast.success("Added to wishlist ❤️");
     }
 
     localStorage.setItem("wishlistItems", JSON.stringify(wishlist));
     window.dispatchEvent(new Event("wishlistUpdated"));
   };
 
-  return (
-    <section className="py-10">
-      <div className="max-w-6xl mx-auto px-6">
+  const increaseQuantity = () => setQuantity(quantity + 1);
+  const decreaseQuantity = () => setQuantity(quantity > 1 ? quantity - 1 : 1);
 
-        {/* 🔙 BACK */}
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-600"></div>
+      </div>
+    );
+
+  if (!product)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-red-500 text-3xl font-bold mb-4">
+            Product Not Found
+          </h2>
+          <Link to="/shop" className="text-blue-500 underline text-lg">
+            Back to Shop
+          </Link>
+        </div>
+      </div>
+    );
+
+  // ---------------- RELATED PRODUCTS ----------------
+  const relatedProducts = products.filter(
+    (p) =>
+      p._id !== product._id &&
+      p.categoryId?._id === product.categoryId?._id
+  );
+
+  return (
+    <section className="py-12 bg-gradient-to-br from-gray-50 to-white min-h-screen">
+      <div className="max-w-7xl mx-auto px-6">
+
+        {/* BACK BUTTON */}
         <Link
           to="/shop"
-          className="inline-flex items-center gap-2 mb-6 text-gray-600 hover:text-black"
+          className="inline-flex items-center gap-2 mb-8 text-gray-600 hover:text-orange-600 transition-colors duration-300 text-lg font-medium"
         >
-          <FiArrowLeft />
-          Back
+          <FiArrowLeft className="text-xl" /> Back to Shop
         </Link>
 
-        <div className="grid md:grid-cols-2 gap-10">
+        <div className="grid lg:grid-cols-2 gap-12">
 
-          {/* IMAGE */}
-          <div>
-            <img
-              src={activeImage}
-              alt={product.name}
-              className="w-full h-[400px] object-cover rounded"
-            />
-
-            <div className="flex gap-3 mt-4">
-              {product.images?.map((img, i) => (
-                <img
-                  key={i}
-                  src={img}
-                  onClick={() => setActiveImage(img)}
-                  className="w-20 h-20 object-cover cursor-pointer border"
-                />
-              ))}
+          {/* PRODUCT IMAGE */}
+          <div className="relative">
+            <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
+              <img
+                src={
+                  product.image
+                    ? `${backendUrl}/uploads/${product.image}`
+                    : "https://via.placeholder.com/600"
+                }
+                alt={product.productName}
+                className="w-full h-[500px] object-cover hover:scale-105 transition-transform duration-500"
+                onError={(e) => {
+                  e.target.src = "https://via.placeholder.com/600?text=No+Image";
+                }}
+              />
             </div>
+            {/* Decorative elements */}
+            <div className="absolute -top-4 -left-4 w-8 h-8 bg-orange-400 rounded-full opacity-20"></div>
+            <div className="absolute -bottom-4 -right-4 w-12 h-12 bg-orange-500 rounded-full opacity-20"></div>
           </div>
 
-          {/* DETAILS */}
-          <div>
-            <h1 className="text-3xl font-bold">{product.name}</h1>
-
-            {/* PRICE */}
-            <div className="mt-3 flex gap-3 items-center">
-              <p className="text-orange-600 text-2xl font-bold">
-                ₹{product.price}
-              </p>
-
-              {product.originalPrice && (
-                <>
-                  <p className="line-through text-gray-400">
-                    ₹{product.originalPrice}
-                  </p>
-                  <span className="bg-green-100 text-green-600 px-2 py-1 text-xs rounded">
-                    {Math.round(
-                      ((product.originalPrice - product.price) /
-                        product.originalPrice) *
-                        100
-                    )}
-                    % OFF
-                  </span>
-                </>
-              )}
+          {/* PRODUCT DETAILS */}
+          <div className="space-y-6">
+            {/* Category Badge */}
+            <div className="inline-block bg-orange-100 text-orange-800 px-4 py-2 rounded-full text-sm font-semibold uppercase tracking-wide">
+              {product.categoryId?.name}
             </div>
 
-            <p className="mt-4 text-gray-600">
-              {product.description}
-            </p>
+            {/* Product Name */}
+            <h1 className="text-5xl font-bold text-gray-900 leading-tight">
+              {product.productName}
+            </h1>
 
-            {/* SIZE */}
-            {product.sizes && (
-              <div className="mt-6">
-                <h4>Select Size</h4>
-                <div className="flex gap-2 mt-2">
-                  {product.sizes.map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`px-3 py-1 border ${
-                        selectedSize === size
-                          ? "bg-black text-white"
-                          : ""
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
+            {/* Price and Rating */}
+            <div className="flex items-center gap-6">
+              <p className="text-4xl font-bold text-orange-600">
+                ₹{product.price}
+              </p>
+              <div className="flex items-center gap-2 bg-green-100 text-green-700 px-4 py-2 rounded-full">
+                <FaStar className="text-yellow-500" />
+                <span className="font-bold">{product.rating}</span>
               </div>
-            )}
+            </div>
 
-            {/* BUTTONS */}
-            <div className="flex gap-4 mt-6">
+            {/* Description */}
+            <div className="bg-gray-50 p-6 rounded-xl border-l-4 border-orange-500">
+              <p className="text-gray-700 leading-relaxed text-lg">
+                {product.description}
+              </p>
+            </div>
+
+            {/* Quantity Selector */}
+            <div className="flex items-center gap-4">
+              <span className="text-lg font-semibold text-gray-700">Quantity:</span>
+              <div className="flex items-center border-2 border-gray-300 rounded-lg">
+                <button
+                  onClick={decreaseQuantity}
+                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 transition-colors"
+                >
+                  <FaMinus />
+                </button>
+                <span className="px-4 py-2 font-bold text-xl">{quantity}</span>
+                <button
+                  onClick={increaseQuantity}
+                  className="px-4 py-2 text-gray-600 hover:bg-gray-100 transition-colors"
+                >
+                  <FaPlus />
+                </button>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-4 pt-4">
               <button
                 onClick={addToCart}
-                className="bg-orange-600 text-white px-6 py-2 rounded"
+                className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 text-white py-4 px-8 rounded-xl font-bold text-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
               >
-                Add to Cart
+                <FaShoppingCart /> Add To Cart
               </button>
 
               <button
                 onClick={toggleWishlist}
-                className={`border px-4 py-2 rounded ${
-                  isWishlisted ? "bg-red-500 text-white" : ""
+                className={`p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-110 shadow-lg hover:shadow-xl ${
+                  isWishlisted
+                    ? "bg-red-500 text-white border-red-500"
+                    : "border-gray-300 text-gray-600 hover:bg-red-50 hover:border-red-300"
                 }`}
               >
-                <FaHeart />
+                <FaHeart className="text-xl" />
               </button>
             </div>
           </div>
         </div>
 
         {/* RELATED PRODUCTS */}
-        <div className="mt-16">
-          <h2 className="text-2xl font-bold mb-6">
-            Related Products
-          </h2>
+        {relatedProducts.length > 0 && (
+          <div className="mt-20">
+            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+              Related Products
+            </h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {(() => {
-              const currentRating = product.rating || 0;
-              const relatedByRating = products
-                .filter(
-                  (p) =>
-                    p.category === product.category &&
-                    p._id !== product._id &&
-                    Math.abs((p.rating || 0) - currentRating) <= 0.5
-                )
-                .sort((a, b) => (b.rating || 0) - (a.rating || 0));
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {relatedProducts.slice(0, 4).map((item) => (
+                <Link
+                  key={item._id}
+                  to={`/product/${item._id}`}
+                  className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-gray-200 overflow-hidden"
+                >
+                  <div className="relative overflow-hidden">
+                    <img
+                      src={
+                        item.image
+                          ? `${backendUrl}/uploads/${item.image}`
+                          : "https://via.placeholder.com/300"
+                      }
+                      alt={item.productName}
+                      className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500"
+                      onError={(e) => {
+                        e.target.src = "https://via.placeholder.com/300?text=No+Image";
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div>
+                  </div>
 
-              const relatedProducts = relatedByRating.length
-                ? relatedByRating
-                : products.filter(
-                    (p) =>
-                      p.category === product.category &&
-                      p._id !== product._id
-                  );
+                  <div className="p-4">
+                    <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2">
+                      {item.productName}
+                    </h3>
 
-              return relatedProducts.slice(0, 4).map((item) => (
-                <Link key={item._id} to={`/product/${item._id}`}>
-                  <img
-                    src={item.images?.[0]}
-                    className="h-40 w-full object-cover rounded"
-                  />
-                  <p className="mt-2">{item.name}</p>
-
-                  <div className="flex gap-2 items-center">
-                    <p className="text-orange-600">₹{item.price}</p>
-                    {item.originalPrice && (
-                      <p className="line-through text-gray-400">
-                        ₹{item.originalPrice}
+                    <div className="flex justify-between items-center">
+                      <p className="text-orange-600 font-bold text-xl">
+                        ₹{item.price}
                       </p>
-                    )}
-                    <span className="text-xs text-gray-500">
-                      ⭐ {item.rating?.toFixed(1) || "0.0"}
-                    </span>
+                      <div className="flex items-center gap-1 text-yellow-500">
+                        <FaStar />
+                        <span className="text-gray-600 text-sm font-medium">
+                          {item.rating || 4.2}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </Link>
-              ));
-            })()}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
       </div>
     </section>

@@ -6,7 +6,7 @@ import "aos/dist/aos.css";
 
 const slides = [
   {
-    title: "Welcome to Holly Zolly",
+    title: "Welcome to Holly Zolly", 
     subtitle: "Vastu & Spiritual Products Store",
     description:
       "Enhance your space with positive energy through our carefully selected Vastu items, spiritual tools, and healing products.",
@@ -57,12 +57,12 @@ export default function AstrologyHero() {
   };
 
   return (
-    <section className="relative md:h-[90vh] h-[75vh] w-full overflow-hidden bg-black">
+    <section className="relative md:h-[90vh] h-[77vh] w-full overflow-hidden bg-black">
 
       {/* BACKGROUND */}
       <img
         key={current}
-        src={slides[current].image}
+        src={slides[current].image} 
         alt="Astrology Background"
         className="absolute inset-0 w-full h-full object-cover scale-100 md:scale-110"
       />

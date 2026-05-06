@@ -41,7 +41,6 @@ export default function Categories() {
             <tr>
               <th className="p-3 text-left">Image</th>
               <th className="p-3 text-left">Name</th>
-              <th className="p-3 text-left">Parent</th>
               <th className="p-3 text-left">Status</th>
               <th className="p-3 text-center">Actions</th>
             </tr>
@@ -51,13 +50,17 @@ export default function Categories() {
             {categories.map((category) => (
               <tr key={category.id} className="border-t">
                 <td className="p-3 font-semibold">
-                  <img src={category.image} className="h-14 w-14" />
+                  <img
+                    src={category.image}
+                    alt={category.name}
+                    className="h-14 w-14 object-cover rounded"
+                    onError={(e) => {
+                      e.target.src = "https://via.placeholder.com/56?text=No+Image";
+                    }}
+                  />
                 </td>
                 <td className="p-3 font-semibold">
                   {category.name}
-                </td>
-                <td className="p-3">
-                  {category.parent || "—"}
                 </td>
                 <td className="p-3">
                   <span

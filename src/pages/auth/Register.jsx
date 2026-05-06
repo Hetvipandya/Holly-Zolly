@@ -8,6 +8,7 @@
 //   FaEnvelope,
 //   FaArrowRight,
 // } from "react-icons/fa";
+// import { client } from "../../lib/sanity";
 
 // export default function Register() {
 //   const navigate = useNavigate();
@@ -18,63 +19,48 @@
 //   const [form, setForm] = useState({
 //     name: "",
 //     email: "",
-//      phone: "",
+//     phone: "",
 //     password: "",
 //     confirmPassword: "",
 //   });
 
-// const handleChange = (e) => {
-//   const { name, value } = e.target;
+//   const handleChange = (e) => {
+//     const { name, value } = e.target;
 
-//   // ✅ PHONE FIELD CONTROL
-//   if (name === "phone") {
-//     // Allow only numbers & max 10 digits
-//     const cleaned = value.replace(/\D/g, "").slice(0, 10);
-//     setForm({ ...form, phone: cleaned });
-//     return;
-//   }
+//     if (name === "phone") {
+//       const cleaned = value.replace(/\D/g, "").slice(0, 10);
+//       setForm({ ...form, phone: cleaned });
+//       return;
+//     }
 
-//   setForm({ ...form, [name]: value });
-// };
-
-//   // EMAIL CHECK
-//   const isValidEmail = (email) => {
-//     return /\S+@\S+\.\S+/.test(email);
+//     setForm({ ...form, [name]: value });
 //   };
 
-//   const isValidPhone = (phone) => {
-//   return /^[6-9]\d{9}$/.test(phone); // Indian 10-digit format
-// };
+//   const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
+//   const isValidPhone = (phone) => /^[6-9]\d{9}$/.test(phone);
 
-//   // REGISTER
-//   const handleRegister = (e) => {
+//   // 🚀 REGISTER WITH SANITY
+//   const handleRegister = async (e) => {
 //     e.preventDefault();
 
 //     const name = form.name.trim();
 //     const email = form.email.trim();
 //     const password = form.password;
 //     const confirmPassword = form.confirmPassword;
-
 //     const phone = form.phone.trim();
 
-// if (!name || !email || !phone || !password || !confirmPassword) {
-//   toast.error("⚠️ All fields are required");
-//   return;
-// }
-
-// if (!isValidPhone(phone)) {
-//   toast.error("⚠️ Invalid phone number");
-//   return;
-// }
-
-//     // ❌ VALIDATIONS
-//     if (!name || !email || !password || !confirmPassword) {
+//     if (!name || !email || !phone || !password || !confirmPassword) {
 //       toast.error("⚠️ All fields are required");
 //       return;
 //     }
 
 //     if (!isValidEmail(email)) {
 //       toast.error("⚠️ Invalid email format");
+//       return;
+//     }
+
+//     if (!isValidPhone(phone)) {
+//       toast.error("⚠️ Invalid phone number");
 //       return;
 //     }
 
@@ -88,49 +74,57 @@
 //       return;
 //     }
 
-//     const users = JSON.parse(localStorage.getItem("users")) || [];
+//     try {
+//       // ✅ CHECK USER EXISTS IN SANITY
+//       const existingUser = await client.fetch(
+//         `*[_type == "profile" && email == $email][0]`,
+//         { email }
+//       );
 
-//     const userExists = users.find((u) => u.email === email);
+//       if (existingUser) {
+//         toast.error("⚠️ User already exists");
+//         return;
+//       }
 
-//     if (userExists) {
-//       toast.error("⚠️ User already exists");
-//       return;
+//       // ✅ SAVE TO SANITY
+//       const response = await client.create({
+//         _type: "profile",
+//         fullName: name,
+//         email: email,
+//         phone: phone,
+//         password: password,
+//       });
+
+//       // ✅ OPTIONAL localStorage (keep your flow same)
+//       const newUser = {
+//         id: response._id,
+//         name,
+//         email,
+//         phone,
+//       };
+
+//       localStorage.setItem("currentUser", JSON.stringify(newUser));
+
+//       toast.success("🎉 Account created & saved to Sanity!");
+
+//       setTimeout(() => {
+//         navigate("/");
+//       }, 800);
+
+//     } catch (error) {
+//       console.error(error);
+//       toast.error("❌ Error saving to Sanity");
 //     }
-
-//     // ✅ CREATE USER
-//     const newUser = {
-//       id: Date.now(),
-//       name,
-//       email,
-//        phone, 
-//       password,
-//     };
-
-//     users.push(newUser);
-//     localStorage.setItem("users", JSON.stringify(users));
-
-//     // AUTO LOGIN
-//     localStorage.setItem("currentUser", JSON.stringify(newUser));
-
-//     // 🎉 SUCCESS TOAST
-//     toast.success("🎉 Account created successfully!");
-
-//     // smooth redirect
-//     setTimeout(() => {
-//       navigate("/");
-//     }, 800);
 //   };
 
 //   return (
 //     <section className="min-h-screen flex items-center justify-center bg-[#FCFBFA] py-16 px-6 relative overflow-hidden">
 
-//       {/* BACKGROUND */}
 //       <div className="absolute top-0 right-0 w-96 h-96 bg-orange-100/40 rounded-full -mr-48 -mt-48 blur-3xl"></div>
 //       <div className="absolute bottom-0 left-0 w-96 h-96 bg-gray-100 rounded-full -ml-48 -mb-48 blur-3xl"></div>
 
 //       <div className="bg-white rounded-[3rem] shadow-[0_20px_70px_rgba(0,0,0,0.03)] border border-gray-100 w-full max-w-xl overflow-hidden flex flex-col md:flex-row relative z-10">
 
-//         {/* LEFT SIDE */}
 //         <div className="hidden lg:flex w-2/5 bg-black p-12 text-white flex-col justify-between">
 //           <div>
 //             <h2 className="text-3xl font-bold mt-10 leading-tight">
@@ -143,7 +137,6 @@
 //           </p>
 //         </div>
 
-//         {/* RIGHT SIDE */}
 //         <div className="flex-1 p-8 md:p-12">
 
 //           <div className="mb-10">
@@ -157,13 +150,12 @@
 
 //           <form className="space-y-6" onSubmit={handleRegister}>
 
-//             {/* NAME */}
 //             <div>
 //               <label className="text-xs text-gray-400 flex items-center gap-2">
 //                 <FaUser size={10} /> Full Name
 //               </label>
 //               <input
-//                 type="text" 
+//                 type="text"
 //                 name="name"
 //                 value={form.name}
 //                 onChange={handleChange}
@@ -172,7 +164,6 @@
 //               />
 //             </div>
 
-//             {/* EMAIL */}
 //             <div>
 //               <label className="text-xs text-gray-400 flex items-center gap-2">
 //                 <FaEnvelope size={10} /> Email
@@ -187,74 +178,67 @@
 //               />
 //             </div>
 
-//             {/* PHONE */}
-// <div>
-//   <label className="text-xs text-gray-400 flex items-center gap-2">
-//     📞 Phone Number
-//   </label>
-// <input
-//   type="tel"
-//   name="phone"
-//   value={form.phone}
-//   onChange={handleChange}
-//   placeholder="**********"
-//   maxLength={10} // extra safety
-//   className="w-full mt-2 px-4 py-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-orange-500"
-// />
-// </div>
+//             <div>
+//               <label className="text-xs text-gray-400 flex items-center gap-2">
+//                 📞 Phone Number
+//               </label>
+//               <input
+//                 type="tel"
+//                 name="phone"
+//                 value={form.phone}
+//                 onChange={handleChange}
+//                 placeholder="**********"
+//                 maxLength={10}
+//                 className="w-full mt-2 px-4 py-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-orange-500"
+//               />
+//             </div>
 
-//             {/* PASSWORD */}
-//          {/* PASSWORD */}
-// <div className="space-y-4">
+//             <div className="space-y-4">
 
-//   {/* PASSWORD */}
-//   <div className="relative">
-//     <input
-//       type={showPassword ? "text" : "password"}
-//       name="password"
-//       value={form.password}
-//       onChange={handleChange}
-//       placeholder="Password"
-//       className="w-full px-4 py-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-orange-500"
-//     />
-//     <button
-//       type="button"
-//       onClick={() => setShowPassword(!showPassword)}
-//       className="absolute right-3 top-3 text-gray-400"
-//     >
-//       {showPassword ? <FaEyeSlash /> : <FaEye />}
-//     </button>
-//   </div>
+//               <div className="relative">
+//                 <input
+//                   type={showPassword ? "text" : "password"}
+//                   name="password"
+//                   value={form.password}
+//                   onChange={handleChange}
+//                   placeholder="Password"
+//                   className="w-full px-4 py-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-orange-500"
+//                 />
+//                 <button
+//                   type="button"
+//                   onClick={() => setShowPassword(!showPassword)}
+//                   className="absolute right-3 top-3 text-gray-400"
+//                 >
+//                   {showPassword ? <FaEyeSlash /> : <FaEye />}
+//                 </button>
+//               </div>
 
-//   {/* CONFIRM PASSWORD */}
-//   <div className="relative">
-//     <input
-//       type={showConfirmPassword ? "text" : "password"}
-//       name="confirmPassword"
-//       value={form.confirmPassword}
-//       onChange={handleChange}
-//       placeholder="Confirm Password"
-//       className="w-full px-4 py-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-orange-500"
-//     />
-//     <button
-//       type="button"
-//       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-//       className="absolute right-3 top-3 text-gray-400"
-//     >
-//       {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-//     </button>
-//   </div>
+//               <div className="relative">
+//                 <input
+//                   type={showConfirmPassword ? "text" : "password"}
+//                   name="confirmPassword"
+//                   value={form.confirmPassword}
+//                   onChange={handleChange}
+//                   placeholder="Confirm Password"
+//                   className="w-full px-4 py-3 bg-gray-50 rounded-xl outline-none focus:ring-2 focus:ring-orange-500"
+//                 />
+//                 <button
+//                   type="button"
+//                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+//                   className="absolute right-3 top-3 text-gray-400"
+//                 >
+//                   {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+//                 </button>
+//               </div>
 
-// </div>
+//             </div>
 
-//             {/* BUTTON */}
 //             <button className="w-full bg-black text-white py-4 rounded-xl flex justify-center items-center gap-2 hover:bg-orange-600 transition">
 //               Sign Up <FaArrowRight />
 //             </button>
 
 //           </form>
 
-//           {/* LOGIN */}
 //           <p className="text-center mt-6 text-sm text-gray-400">
 //             Already have an account?{" "}
 //             <Link to="/login" className="text-black font-bold">
@@ -266,7 +250,7 @@
 //       </div>
 //     </section>
 //   );
-// } 
+// }
 
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -278,7 +262,6 @@ import {
   FaEnvelope,
   FaArrowRight,
 } from "react-icons/fa";
-import { client } from "../../lib/sanity";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -309,85 +292,57 @@ export default function Register() {
   const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
   const isValidPhone = (phone) => /^[6-9]\d{9}$/.test(phone);
 
-  // 🚀 REGISTER WITH SANITY
+  // 🚀 REGISTER WITH BACKEND (MONGODB)
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    const name = form.name.trim();
-    const email = form.email.trim();
-    const password = form.password;
-    const confirmPassword = form.confirmPassword;
-    const phone = form.phone.trim();
+    const { name, email, phone, password, confirmPassword } = form;
 
     if (!name || !email || !phone || !password || !confirmPassword) {
-      toast.error("⚠️ All fields are required");
-      return;
+      return toast.error("⚠️ All fields are required");
     }
 
-    if (!isValidEmail(email)) {
-      toast.error("⚠️ Invalid email format");
-      return;
-    }
-
-    if (!isValidPhone(phone)) {
-      toast.error("⚠️ Invalid phone number");
-      return;
-    }
-
-    if (password.length < 6) {
-      toast.error("⚠️ Password must be at least 6 characters");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      toast.error("⚠️ Passwords do not match");
-      return;
-    }
+    if (!isValidEmail(email)) return toast.error("⚠️ Invalid email format");
+    if (!isValidPhone(phone)) return toast.error("⚠️ Invalid phone number");
+    if (password.length < 6)
+      return toast.error("⚠️ Password must be at least 6 characters");
+    if (password !== confirmPassword)
+      return toast.error("⚠️ Passwords do not match");
 
     try {
-      // ✅ CHECK USER EXISTS IN SANITY
-      const existingUser = await client.fetch(
-        `*[_type == "profile" && email == $email][0]`,
-        { email }
-      );
-
-      if (existingUser) {
-        toast.error("⚠️ User already exists");
-        return;
-      }
-
-      // ✅ SAVE TO SANITY
-      const response = await client.create({
-        _type: "profile",
-        fullName: name,
-        email: email,
-        phone: phone,
-        password: password,
+      const res = await fetch("https://holly-zolly-cvjd.onrender.com/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          phone,
+          password,
+        }),
       });
 
-      // ✅ OPTIONAL localStorage (keep your flow same)
-      const newUser = {
-        id: response._id,
-        name,
-        email,
-        phone,
-      };
+      const data = await res.json();
 
-      localStorage.setItem("currentUser", JSON.stringify(newUser));
+      if (!res.ok) {
+        return toast.error(data.message || "Registration failed");
+      }
 
-      toast.success("🎉 Account created & saved to Sanity!");
+      toast.success("🎉 Account created successfully!");
 
       setTimeout(() => {
-        navigate("/");
+        navigate("/login");
       }, 800);
 
     } catch (error) {
       console.error(error);
-      toast.error("❌ Error saving to Sanity");
+      toast.error("❌ Server error");
     }
   };
 
   return (
+    // 🔥 SAME DESIGN (NO CHANGE AT ALL)
     <section className="min-h-screen flex items-center justify-center bg-[#FCFBFA] py-16 px-6 relative overflow-hidden">
 
       <div className="absolute top-0 right-0 w-96 h-96 bg-orange-100/40 rounded-full -mr-48 -mt-48 blur-3xl"></div>
@@ -503,7 +458,10 @@ export default function Register() {
 
             </div>
 
-            <button className="w-full bg-black text-white py-4 rounded-xl flex justify-center items-center gap-2 hover:bg-orange-600 transition">
+            <button
+              type="submit"
+              className="w-full bg-black text-white py-4 rounded-xl flex justify-center items-center gap-2 hover:bg-orange-600 transition"
+            >
               Sign Up <FaArrowRight />
             </button>
 

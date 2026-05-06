@@ -1,234 +1,3 @@
-// import { useParams, useNavigate, Link } from "react-router-dom";
-// import { useEffect, useState } from "react";
-// import DeliveryTracking from "../../components/DeliveryTracking";
-// import {
-//   FaMapMarkerAlt,
-//   FaReceipt,
-//   FaBox,
-//   FaPhoneAlt,
-//   FaTrash,
-// } from "react-icons/fa";
-
-// export default function OrderDetails() {
-//   const { orderId } = useParams();
-//   const navigate = useNavigate();
-
-//   const [order, setOrder] = useState(null);
-
-//   // ✅ LOAD ORDER
-//   useEffect(() => {
-//     const orders = JSON.parse(localStorage.getItem("orders")) || [];
-//     const foundOrder = orders.find((o) => String(o.id) === orderId);
-
-//     if (!foundOrder) navigate("/orders");
-//     else setOrder(foundOrder);
-//   }, [orderId, navigate]);
-
-//   if (!order) return null;
-
-//   const orderStatus = order.status?.toLowerCase().replace(/\s/g, "-");
-
-//   // ✅ CANCEL FULL ORDER
-//   const handleCancelOrder = () => {
-//     if (!window.confirm("Cancel full order?")) return;
-
-//     let orders = JSON.parse(localStorage.getItem("orders")) || [];
-//     orders = orders.filter((o) => String(o.id) !== orderId);
-
-//     localStorage.setItem("orders", JSON.stringify(orders));
-//     window.dispatchEvent(new Event("ordersUpdated"));
-
-//     alert("Order Cancelled ❌");
-//     navigate("/orders");
-//   };
-
-//   // ✅ CANCEL SINGLE PRODUCT
-//   const handleRemoveItem = (itemId) => {
-//     if (!window.confirm("Remove this item from order?")) return;
-
-//     let orders = JSON.parse(localStorage.getItem("orders")) || [];
-
-//     const updatedOrders = orders.map((o) => {
-//       if (String(o.id) === orderId) {
-//         const updatedItems = o.items.filter((i) => i.id !== itemId);
-
-//         // if no items left → delete order
-//         if (updatedItems.length === 0) {
-//           return null;
-//         }
-
-//         const newTotal = updatedItems.reduce(
-//           (sum, item) => sum + item.price * item.quantity,
-//           0
-//         );
-
-//         return {
-//           ...o,
-//           items: updatedItems,
-//           total: newTotal,
-//         };
-//       }
-//       return o;
-//     }).filter(Boolean);
-
-//     localStorage.setItem("orders", JSON.stringify(updatedOrders));
-//     window.dispatchEvent(new Event("ordersUpdated"));
-
-//     const updatedOrder = updatedOrders.find(
-//       (o) => String(o.id) === orderId
-//     );
-
-//     if (!updatedOrder) {
-//       navigate("/orders");
-//     } else {
-//       setOrder(updatedOrder);
-//     }
-//   };
-
-//   return (
-//     <section className="py-16 bg-gradient-to-b from-[#FCFBFA] to-white min-h-screen">
-//       <div className="max-w-7xl mx-auto px-6">
-
-//         {/* HEADER */}
-//         <div className="mb-10">
-//           <h1 className="text-4xl font-bold mb-3">
-//             Order <span className="text-orange-600 italic">Details</span>
-//           </h1>
-
-//           <div className="flex flex-wrap items-center gap-4">
-//             <span className="bg-black text-white px-3 py-1 rounded-md text-sm font-mono">
-//               #{order.id}
-//             </span>
-
-//             <span className="text-gray-400 text-sm">
-//               {order.date}
-//             </span>
-
-//             <div className="ml-auto flex gap-3">
-//               <span className="bg-orange-50 text-orange-700 px-4 py-1 rounded-full text-xs font-bold uppercase">
-//                 {order.status}
-//               </span>
-
-//               {order.status !== "Delivered" && (
-//                 <button
-//                   onClick={handleCancelOrder}
-//                   className="bg-red-50 text-red-600 px-4 py-1 rounded-full text-xs font-bold hover:bg-red-600 hover:text-white transition"
-//                 >
-//                   Cancel Order
-//                 </button>
-//               )}
-//             </div>
-//           </div>
-//         </div>
-
-//         <div className="grid lg:grid-cols-3 gap-10">
-
-//           {/* LEFT */}
-//           <div className="lg:col-span-2 space-y-8">
-
-//             {/* ITEMS */}
-//             <div className="bg-white rounded-3xl p-8 shadow-sm border">
-//               <div className="flex items-center gap-3 mb-6">
-//                 <FaBox className="text-orange-600" />
-//                 <h3 className="text-xl font-bold">Order Items</h3>
-//               </div>
-
-//               <div className="space-y-6">
-//                 {order.items.map((item) => (
-//                   <div
-//                     key={item.id}
-//                     className="flex flex-col sm:flex-row gap-4 border-b pb-4"
-//                   >
-//                     <img
-//                       src={item.image || item.images?.[0]}
-//                       className="w-24 h-24 object-cover rounded-xl"
-//                     />
-
-//                     <div className="flex-1">
-//                       <h4 className="font-bold text-lg">
-//                         {item.name}
-//                       </h4>
-//                       <p className="text-sm text-gray-500">
-//                         Qty: {item.quantity}
-//                       </p>
-//                       <p className="text-orange-600 font-bold mt-1">
-//                         ₹{item.price * item.quantity}
-//                       </p>
-//                     </div>
-
-//                     {/* CANCEL ITEM */}
-//                     {order.status !== "Delivered" && (
-//                       <button
-//                         onClick={() => handleRemoveItem(item.id)}
-//                         className="flex items-center gap-2 text-red-500 text-sm font-bold hover:underline"
-//                       >
-//                         <FaTrash size={12} /> Remove
-//                       </button>
-//                     )}
-//                   </div>
-//                 ))}
-//               </div>
-//             </div>
-
-//             {/* TRACKING */}
-//             <div className="bg-white rounded-3xl p-8 shadow-sm border">
-//               <DeliveryTracking status={orderStatus} />
-//             </div>
-
-//             {/* ADDRESS */}
-//             <div className="bg-white rounded-3xl p-8 shadow-sm border">
-//               <div className="flex items-center gap-3 mb-4">
-//                 <FaMapMarkerAlt className="text-orange-600" />
-//                 <h3 className="font-bold text-xl">Shipping Address</h3>
-//               </div>
-
-//               <p className="font-bold">{order.address.name}</p>
-//               <p className="text-gray-600">{order.address.address}</p>
-
-//               <div className="flex items-center gap-2 mt-3 text-orange-600 font-bold">
-//                 <FaPhoneAlt size={12} />
-//                 {order.address.phone}
-//               </div>
-//             </div>
-//           </div>
-
-//           {/* RIGHT */}
-//           <aside className="space-y-6">
-
-//             <div className="bg-black text-white rounded-3xl p-8 shadow-lg">
-//               <div className="flex items-center gap-3 mb-4">
-//                 <FaReceipt />
-//                 <h3 className="text-xl font-bold">Order Summary</h3>
-//               </div>
-
-//               <div className="flex justify-between text-lg font-semibold">
-//                 <span>Total</span>
-//                 <span className="text-orange-500">
-//                   ₹{order.total}
-//                 </span>
-//               </div>
-//             </div>
-
-//             <div className="bg-white rounded-3xl p-6 border text-center">
-//               <p className="text-sm text-gray-500 mb-3">
-//                 Need help?
-//               </p>
-
-//               <Link
-//                 to="/contact"
-//                 className="text-orange-600 font-bold underline"
-//               >
-//                 Contact Support
-//               </Link>
-//             </div>
-
-//           </aside>
-//         </div>
-//       </div>
-//     </section>
-//   );
-// }
-
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import DeliveryTracking from "../../components/DeliveryTracking";
@@ -240,39 +9,64 @@ import {
   FaTrash,
 } from "react-icons/fa";
 
-import { client } from "../../lib/sanity";
 
 export default function OrderDetails() {
   const { orderId } = useParams();
   const navigate = useNavigate();
 
   const [order, setOrder] = useState(null);
-
   const [showModal, setShowModal] = useState(false);
   const [actionType, setActionType] = useState("");
   const [selectedItemId, setSelectedItemId] = useState(null);
 
-  // ✅ FETCH ORDER FROM SANITY
+  // 🔥 backend url
+  const backendUrl = "https://holly-zolly-cvjd.onrender.com";
+
+  // ✅ IMAGE HELPER (MAIN FIX)
+  const getImageUrl = (img) => {
+    if (!img) return "https://via.placeholder.com/150";
+    if (img.startsWith("http")) return img;
+    return `${backendUrl}/uploads/${img}`;
+  };
+
+  // FETCH ORDER
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const data = await client.fetch(
-          `*[_type == "order" && orderId == $id][0]{
-            orderId,
-            date,
-            status,
-            total,
-            items,
-            address
-          }`,
-          { id: orderId }
+        const res = await fetch(
+          `https://holly-zolly-cvjd.onrender.com/api/order/${orderId}`
         );
 
-        if (!data) navigate("/orders");
+        const data = await res.json();
+
+        if (!data.success) throw new Error("Order not found");
+
+        const o = data.order;
 
         setOrder({
-          id: data.orderId,
-          ...data,
+          id: o._id,
+          date: new Date(o.createdAt).toLocaleString(),
+          status: o.status,
+          total: o.totalPrice,
+
+          items: o.products.map((p) => ({
+            id: p.productId?._id,
+            name: p.productId?.productName,
+            price: p.productId?.price,
+            quantity: p.quantity,
+
+            // ✅ FIXED IMAGE
+            image: getImageUrl(
+              p.productId?.image ||
+              p.productId?.images?.[0]
+            ),
+          })),
+
+          address: {
+            name: o.address.fullName,
+            address: `${o.address.area}, ${o.address.city}`,
+            phone: o.address.phone,
+          },
         });
       } catch (err) {
         console.error(err);
@@ -298,10 +92,12 @@ export default function OrderDetails() {
     setShowModal(true);
   };
 
-  // ⚠️ NOTE: Sanity update logic (optional)
   const handleConfirm = async () => {
     if (actionType === "order") {
-      await client.delete(order._id);
+     await fetch(`${backendUrl}/api/order/${order.id}`, {
+  method: "DELETE",
+  
+});
       navigate("/orders");
     }
 
@@ -311,10 +107,6 @@ export default function OrderDetails() {
           (i.id || i._key || index) !== selectedItemId
       );
 
-      await client
-        .patch(order._id)
-        .set({ items: updatedItems })
-        .commit();
 
       setOrder({ ...order, items: updatedItems });
     }
@@ -377,12 +169,13 @@ export default function OrderDetails() {
 
                 {order.items?.map((item, index) => (
                   <div
-                    key={item.id || item._key || index}   // ✅ FIXED KEY ISSUE
+                    key={item.id || index}
                     className="flex flex-col sm:flex-row gap-4 border-b pb-4"
                   >
                     <img
-                      src={item.image || item.images?.[0]}
+                      src={item.image}
                       className="w-full sm:w-24 h-40 sm:h-24 object-cover rounded-xl"
+                      alt={item.name}
                     />
 
                     <div className="flex-1">
@@ -399,9 +192,7 @@ export default function OrderDetails() {
 
                     {order.status !== "Delivered" && (
                       <button
-                        onClick={() =>
-                          openRemoveItem(item.id || item._key || index)
-                        }
+                        onClick={() => openRemoveItem(item.id || index)}
                         className="flex items-center gap-2 text-red-500 text-sm font-bold hover:underline"
                       >
                         <FaTrash size={12} /> Remove

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 
-export default function Login() {
+export default function Login() { 
     const [showPassword, setShowPassword] = useState(false);
 
     return (
@@ -14,7 +14,7 @@ export default function Login() {
                 <div className="flex items-center font-heading justify-center pb-5 gap-2">
                     <img src="/image/logo/harvon-logo.png" alt="Logo" className="h-14" />
                     <h2 className="text-4xl text-primary ">Admin Login</h2>
-                </div>
+                </div> 
 
 
 

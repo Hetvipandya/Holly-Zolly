@@ -7,190 +7,166 @@
 //   const [wishlistItems, setWishlistItems] = useState([]);
 //   const navigate = useNavigate();
 
-//   // 🔥 Top Center Toast Style
 //   const topToast = {
 //     position: "top-center",
 //     style: {
-//       background: "#4B5563",
+//       background: "#374151",
 //       color: "#fff",
 //       borderRadius: "10px",
 //     },
 //   };
 
+//   // ✅ Load wishlist
 //   useEffect(() => {
-//     const storedWishlist =
-//       JSON.parse(localStorage.getItem("wishlistItems")) || [];
-//     setWishlistItems(storedWishlist);
+//     const stored = JSON.parse(localStorage.getItem("wishlistItems")) || [];
+//     setWishlistItems(stored);
 //   }, []);
 
-//   // ❌ REMOVE FROM WISHLIST
+//   // ❌ REMOVE ONLY ONE ITEM (FIXED)
 //   const removeFromWishlist = (id) => {
-//     const updatedWishlist = wishlistItems.filter((item) => item.id !== id);
-//     setWishlistItems(updatedWishlist);
-//     localStorage.setItem("wishlistItems", JSON.stringify(updatedWishlist));
+//     const updated = wishlistItems.filter((item) => item._id !== id);
+
+//     setWishlistItems(updated);
+//     localStorage.setItem("wishlistItems", JSON.stringify(updated));
+
 //     window.dispatchEvent(new Event("wishlistUpdated"));
 
-//     // ✅ TOP CENTER
 //     toast.success("Removed from wishlist ❌", topToast);
 //   };
 
 //   // 🛒 MOVE TO CART
 //   const moveToCart = (product) => {
 //     const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
-//     const sizeToSend =
-//       product.selectedSize || product.sizes?.[0] || "Standard";
 
-//     const index = cart.findIndex(
-//       (item) =>
-//         item.id === product.id && item.selectedSize === sizeToSend
-//     );
+//     const index = cart.findIndex((item) => item._id === product._id);
 
 //     if (index > -1) {
 //       cart[index].quantity += 1;
 //     } else {
 //       cart.push({
-//         id: product.id,
+//         _id: product._id,
 //         name: product.name,
 //         price: product.price,
-//         image: product.images[0],
+//         image: product.images?.[0],
 //         quantity: 1,
-//         selectedSize: sizeToSend,
 //       });
 //     }
 
 //     localStorage.setItem("cartItems", JSON.stringify(cart));
 
-//     const updatedWishlist = wishlistItems.filter(
-//       (item) =>
-//         !(item.id === product.id && item.selectedSize === sizeToSend)
-//     );
+//     // remove from wishlist
+//     const updated = wishlistItems.filter((i) => i._id !== product._id);
+//     setWishlistItems(updated);
+//     localStorage.setItem("wishlistItems", JSON.stringify(updated));
 
-//     setWishlistItems(updatedWishlist);
-//     localStorage.setItem("wishlistItems", JSON.stringify(updatedWishlist));
 //     window.dispatchEvent(new Event("cartUpdated"));
 
-//     // ✅ TOP CENTER
 //     toast.success("Moved to cart 🛒", topToast);
 
 //     navigate("/cart");
 //   };
 
+//   // empty state
 //   if (wishlistItems.length === 0) {
 //     return (
-//       <div
-//         className="py-28 text-center bg-[#FCFBFA] min-h-[60vh] flex flex-col items-center justify-center px-6"
-//         data-aos="fade-up"
-//       >
-//         <div className="w-24 h-24 bg-orange-50 rounded-full flex items-center justify-center mb-6 text-orange-200">
-//           <FaShoppingCart size={40} />
-//         </div>
+//       <div className="py-28 text-center min-h-[60vh] flex flex-col items-center justify-center px-6 bg-[#FCFBFA]">
+//         <FaShoppingCart className="text-orange-200 text-5xl mb-6" />
 
-//         <h2 className="text-3xl font-heading font-bold mb-4 text-black">
-//           Your Wishlist is{" "}
-//           <span className="text-orange-600 italic">Empty</span>
+//         <h2 className="text-3xl font-bold mb-4">
+//           Your Wishlist is <span className="text-orange-600">Empty</span>
 //         </h2>
 
 //         <p className="text-gray-500 mb-8 max-w-sm">
-//           Looks like you haven't saved any Vastu tools yet. Start exploring our collection.
+//           Save your favourite products and come back later.
 //         </p>
 
 //         <Link
 //           to="/shop"
-//           className="inline-flex items-center gap-3 bg-black text-white px-10 py-4 rounded-2xl font-bold hover:bg-orange-600 transition-all shadow-xl shadow-gray-200"
+//           className="bg-black text-white px-8 py-3 rounded-xl hover:bg-orange-600 transition"
 //         >
-//           Discover Products <FaArrowRight size={12} />
+//           Discover Products
 //         </Link>
 //       </div>
 //     );
 //   }
 
 //   return (
-//     <section className="py-16 bg-[#FCFBFA] min-h-screen">
-//       <div className="max-w-7xl mx-auto px-6" data-aos="fade-up">
+//     <section className="py-14 bg-[#FCFBFA] min-h-screen">
+//       <div className="max-w-7xl mx-auto px-4">
 
 //         {/* TITLE */}
-//         <div className="mb-12">
-//           <h1 className="text-4xl md:text-5xl font-heading font-bold text-black mb-2">
-//             My <span className="text-orange-600 italic font-serif">Wishlist</span>
-//           </h1>
-//           <div className="h-1.5 w-20 bg-orange-500 rounded-full"></div>
-//         </div>
+//         <h1 className="text-4xl font-bold mb-10">
+//           My <span className="text-orange-600">Wishlist</span>
+//         </h1>
 
-//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+//         {/* GRID */}
+//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
 //           {wishlistItems.map((item) => (
 //             <div
-//               key={item.id}
-//               className="group bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,0,0,0.05)] hover:-translate-y-2 relative"
+//               key={item._id}
+//               className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group"
 //             >
+
 //               {/* IMAGE */}
-//               <div className="relative h-64 overflow-hidden bg-gray-50">
-//                 <Link to={`/product/${item.id}`}>
+//               <div className="relative h-60 overflow-hidden">
+//                 <Link to={`/product/${item._id}`}>
 //                   <img
-//                     src={item.images[0]}
+//                     src={item.images?.[0]}
 //                     alt={item.name}
-//                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+//                     className="w-full h-full object-cover group-hover:scale-110 transition"
 //                   />
 //                 </Link>
 
+//                 {/* DELETE */}
 //                 <button
-//                   onClick={() => removeFromWishlist(item.id)}
-//                   className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-full text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-md"
+//                   onClick={() => removeFromWishlist(item._id)}
+//                   className="absolute top-3 right-3 bg-white p-2 rounded-full text-red-500 hover:bg-red-500 hover:text-white"
 //                 >
 //                   <FaTrash size={14} />
 //                 </button>
 //               </div>
 
-//               {/* INFO */}
-//               <div className="p-8">
-//                 <h3 className="font-heading font-bold text-xl text-black truncate mb-2">
+//               {/* CONTENT */}
+//               <div className="p-5">
+
+//                 <h3 className="font-semibold text-lg mb-2">
 //                   {item.name}
 //                 </h3>
 
-//                 <div className="flex justify-between items-center mb-6">
-//                   <div>
-//                     <span className="text-xs text-gray-400 uppercase font-bold">
-//                       Price
-//                     </span>
-//                     <span className="block text-2xl font-bold text-black">
-//                       ₹{item.price}
-//                     </span>
-//                   </div>
+//                 <p className="text-sm text-gray-500 mb-3">
+//                   ₹{item.price}
+//                 </p>
 
-//                   <div className="text-right">
-//                     <span className="text-xs text-gray-400 uppercase font-bold">
-//                       Size
-//                     </span>
-//                     <p className="text-sm font-bold text-orange-600 bg-orange-50 px-3 py-1 rounded-lg mt-1 inline-block">
-//                       {item.selectedSize}
-//                     </p>
-//                   </div>
-//                 </div>
-
+//                 {/* BUTTON */}
 //                 <button
 //                   onClick={() => moveToCart(item)}
-//                   className="w-full bg-black text-white py-4 rounded-2xl flex items-center justify-center gap-3 font-bold hover:bg-orange-600 transition-all shadow-lg"
+//                   className="w-full bg-black text-white py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-orange-600 transition"
 //                 >
-//                   <FaShoppingCart size={16} />
+//                   <FaShoppingCart />
 //                   Move to Cart
 //                 </button>
+
 //               </div>
 //             </div>
 //           ))}
-//         </div>
 
+//         </div>
 //       </div>
 //     </section>
 //   );
 // }
 
 import { useState, useEffect } from "react";
-import { FaTrash, FaShoppingCart, FaArrowRight } from "react-icons/fa";
+import { FaTrash, FaShoppingCart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 export default function Wishlist() {
   const [wishlistItems, setWishlistItems] = useState([]);
   const navigate = useNavigate();
+
+  const backendUrl = "https://holly-zolly-cvjd.onrender.com";
 
   const topToast = {
     position: "top-center",
@@ -203,11 +179,12 @@ export default function Wishlist() {
 
   // ✅ Load wishlist
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("wishlistItems")) || [];
+    const stored =
+      JSON.parse(localStorage.getItem("wishlistItems")) || [];
     setWishlistItems(stored);
   }, []);
 
-  // ❌ REMOVE ONLY ONE ITEM (FIXED)
+  // ❌ REMOVE ITEM
   const removeFromWishlist = (id) => {
     const updated = wishlistItems.filter((item) => item._id !== id);
 
@@ -221,7 +198,8 @@ export default function Wishlist() {
 
   // 🛒 MOVE TO CART
   const moveToCart = (product) => {
-    const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
+    const cart =
+      JSON.parse(localStorage.getItem("cartItems")) || [];
 
     const index = cart.findIndex((item) => item._id === product._id);
 
@@ -232,7 +210,7 @@ export default function Wishlist() {
         _id: product._id,
         name: product.name,
         price: product.price,
-        image: product.images?.[0],
+        image: product.image,
         quantity: 1,
       });
     }
@@ -251,14 +229,15 @@ export default function Wishlist() {
     navigate("/cart");
   };
 
-  // empty state
+  // EMPTY STATE
   if (wishlistItems.length === 0) {
     return (
       <div className="py-28 text-center min-h-[60vh] flex flex-col items-center justify-center px-6 bg-[#FCFBFA]">
         <FaShoppingCart className="text-orange-200 text-5xl mb-6" />
 
         <h2 className="text-3xl font-bold mb-4">
-          Your Wishlist is <span className="text-orange-600">Empty</span>
+          Your Wishlist is{" "}
+          <span className="text-orange-600">Empty</span>
         </h2>
 
         <p className="text-gray-500 mb-8 max-w-sm">
@@ -279,12 +258,10 @@ export default function Wishlist() {
     <section className="py-14 bg-[#FCFBFA] min-h-screen">
       <div className="max-w-7xl mx-auto px-4">
 
-        {/* TITLE */}
         <h1 className="text-4xl font-bold mb-10">
           My <span className="text-orange-600">Wishlist</span>
         </h1>
 
-        {/* GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
 
           {wishlistItems.map((item) => (
@@ -293,13 +270,22 @@ export default function Wishlist() {
               className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition group"
             >
 
-              {/* IMAGE */}
+              {/* IMAGE FIX 🔥 */}
               <div className="relative h-60 overflow-hidden">
+
                 <Link to={`/product/${item._id}`}>
                   <img
-                    src={item.images?.[0]}
+                    src={
+                      item.image
+                        ? `${backendUrl}/uploads/${item.image}`
+                        : "https://via.placeholder.com/300"
+                    }
                     alt={item.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition"
+                    onError={(e) => {
+                      e.target.src =
+                        "https://via.placeholder.com/300?text=No+Image";
+                    }}
                   />
                 </Link>
 

@@ -9,7 +9,7 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }) {
          ? "bg-white text-primary"
          : "text-white hover:bg-white hover:text-primary"
      }`;
-
+ 
   return (
     <>
       {/* OVERLAY (mobile only) */}
@@ -59,29 +59,41 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }) {
             Orders
           </NavLink>
 
-          <NavLink to="/admin/users" onClick={() => setSidebarOpen(false)} className={linkClass}>
+          {/* <NavLink to="/admin/users" onClick={() => setSidebarOpen(false)} className={linkClass}>
             Users
-          </NavLink>
+          </NavLink> */}
 
-          <NavLink to="/admin/coupons" onClick={() => setSidebarOpen(false)} className={linkClass}>
+          {/* <NavLink to="/admin/coupons" onClick={() => setSidebarOpen(false)} className={linkClass}>
             Coupons
-          </NavLink>
+          </NavLink> */}
 
-          <NavLink to="/admin/returns" onClick={() => setSidebarOpen(false)} className={linkClass}>
+          {/* <NavLink to="/admin/returns" onClick={() => setSidebarOpen(false)} className={linkClass}>
             Return & Refund
-          </NavLink>
+          </NavLink> */}
 
           <NavLink to="/admin/payments" onClick={() => setSidebarOpen(false)} className={linkClass}>
-            Payment List
+            Payment 
           </NavLink>
 
           <NavLink to="/admin/reviews" onClick={() => setSidebarOpen(false)} className={linkClass}>
             Reviews
           </NavLink>
 
-          <NavLink to="/adminlogin" onClick={() => setSidebarOpen(false)} className={linkClass}>
-            LogOut
-          </NavLink>
+          <NavLink
+  to="/"
+  onClick={() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("currentUser");
+    localStorage.removeItem("isAdmin"); // 🔥 IMPORTANT
+
+    window.dispatchEvent(new Event("authChanged")); // 🔥 navbar update
+
+    setSidebarOpen(false);
+  }}
+  className={linkClass}
+>
+  LogOut
+</NavLink>
 
         </nav>
       </aside>

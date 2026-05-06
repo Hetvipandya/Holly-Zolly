@@ -7,7 +7,7 @@ export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-gray-100 overflow-hidden">
+    <div className="flex min-h-screen mt-8 bg-gray-100 overflow-hidden">
       {/* SIDEBAR */}
       <AdminSidebar
         sidebarOpen={sidebarOpen}
