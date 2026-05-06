@@ -80,7 +80,7 @@ export default function Footer() {
                 href="tel:+919909511967"
                 className="hover:text-gray-700 transition"
               >
-                +91 99095 11967
+                +91 99095 11961
               </a>
             </li>
 

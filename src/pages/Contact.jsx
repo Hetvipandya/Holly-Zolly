@@ -39,8 +39,8 @@ export default function Contact() {
                                     <p className="text-sm text-gray-500">
                                         Speak with our fashion consultants
                                     </p>
-                                    <a href="tel:+91 99095 11967" className="hover:text-[#c4a484]">
-                                        +91 99095 11967
+                                    <a href="tel:+91 99095 11961" className="hover:text-[#c4a484]">
+                                        +91 99095 11961
                                     </a>
                                 </div>
                             </div>

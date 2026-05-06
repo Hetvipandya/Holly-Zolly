@@ -44,7 +44,7 @@ const handleLogin = async (e) => {
   if (email === "admin@gmail.com" && password === "Admin123") {
 
     // dummy admin user
-    const adminUser = {
+    const adminUser = { 
       name: "Admin",
       email: "admin@gmail.com"
     };
